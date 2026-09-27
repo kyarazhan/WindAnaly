@@ -15,10 +15,11 @@ import sys
 # 安装目录的唯一判定：冻结（打包）模式 = exe 所在目录；开发 = 项目根。
 # 全软件（含 updater 包）必须统一用它——避免各处推导不一致导致
 # 「下载了更新、重启不生效」。
-if getattr(sys, 'frozen', False):
-    APP_DIR = os.path.dirname(os.path.abspath(sys.executable))
-else:
-    APP_DIR = os.path.dirname(os.path.abspath(__file__))
+# 1.0.4 起冻结模式采用模块化分发（boot.exe + app/*.pyc 业务层），
+# 本模块的 __file__ 位于 app/ 下，不能再由 __file__ 推导安装根。
+from core.paths import app_dir as _app_dir
+
+APP_DIR = _app_dir()
 
 
 def _handle_update_pending() -> bool:

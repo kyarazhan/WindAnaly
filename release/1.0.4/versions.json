@@ -1,0 +1,14 @@
+{
+  "versions": [
+    {
+      "version": "1.0.4",
+      "date": "2026-09-27",
+      "changelog": "修复独立更新器：单独启动时本地更新包误判无效（顶层目录兼容）、在线更新版本识别错误（新增 data/app_version.txt 版本溯源，随每个补丁更新）。S5 分发瘦身第一步：业务代码层 app/*.pyc 与运行时分离，后续补丁将降至 KB 级。",
+      "patch": {
+        "base": "1.0.3",
+        "url": "1.0.3-1.0.4-patch.zip",
+        "sha256": "bfcbf7bb4856cab2cfc76deb4d73ce7911542a2c2a6c30af50a3beb0621d7131"
+      }
+    }
+  ]
+}

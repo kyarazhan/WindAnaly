@@ -146,6 +146,9 @@ def main():
             rel = os.path.relpath(p, DIST).replace('\\', '/')
             if old.get(rel) != sha256(p):
                 changed.append(rel)
+    # data/ 目录整体排除（用户数据），但 app_version.txt 是程序元数据，
+    # 必须随每个补丁更新——独立更新器靠它识别已装版本（1.0.4 修复）
+    changed.append('data/app_version.txt')
     changed.sort()
     base_full = base_v
     patch_name = f'{base_full}-{new}-patch.zip'
@@ -153,7 +156,10 @@ def main():
     with zipfile.ZipFile(patch_path, 'w', zipfile.ZIP_DEFLATED,
                          compresslevel=9) as zf:
         for rel in changed:
-            zf.write(os.path.join(DIST, *rel.split('/')), rel)
+            if rel == 'data/app_version.txt':
+                zf.writestr(rel, new + '\n')
+            else:
+                zf.write(os.path.join(DIST, *rel.split('/')), rel)
     print(f'patch: {patch_name} {len(changed)} files, '
           f'{os.path.getsize(patch_path) / 1048576:.1f} MB')
     shutil.rmtree(work, ignore_errors=True)

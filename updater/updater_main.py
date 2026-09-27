@@ -781,8 +781,9 @@ class UpdaterApp:
             return
         try:
             with zipfile.ZipFile(path) as zf:
-                rels = [i.filename.replace('\\', '/').lstrip('/')
-                        for i in zf.infolist() if not i.is_dir()]
+                # 复用安装时的归一化逻辑：整体包带顶层文件夹时自动去前缀，
+                # 否则带目录的完整包会被误判为无效（1.0.4 修复）
+                rels = [rel for _, rel in _zip_entries(zf)]
             has_exe = any(r == APP_EXE_DEFAULT for r in rels)
             has_internal = any(r.startswith('_internal/') for r in rels)
             has_app = any(r.startswith('app/') for r in rels)
