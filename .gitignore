@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+build/
+dist/
+.update/
+data/backups/
+data/boot_error.log
+data/windkit.db
+data/settings.json
+.pytest_cache/
+*.zip
+WindAnaly.spec  

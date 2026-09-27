@@ -1,0 +1,32 @@
+[
+  {
+    "name": "GitHub Releases（自动选增量/全量）",
+    "type": "github-releases",
+    "repo": "你的账号/WindAnaly"
+  },
+  {
+    "name": "GitHub raw manifest（增量）",
+    "type": "http",
+    "manifest_url": "https://raw.githubusercontent.com/你的账号/WindAnaly/main/manifest-patch.json"
+  },
+  {
+    "name": "GitHub raw manifest（全量）",
+    "type": "http",
+    "manifest_url": "https://raw.githubusercontent.com/你的账号/WindAnaly/main/manifest-full.json"
+  },
+  {
+    "name": "内网HTTP",
+    "type": "http",
+    "manifest_url": "http://192.168.1.100:8080/windanaly/manifest-patch.json"
+  },
+  {
+    "name": "内网HTTP-全量",
+    "type": "http",
+    "manifest_url": "http://192.168.1.100:8080/windanaly/manifest-full.json"
+  },
+  {
+    "name": "局域网共享",
+    "type": "smb",
+    "manifest_url": "\\\\FILESERVER\\windanaly\\manifest-patch.json"
+  }
+]
