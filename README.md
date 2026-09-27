@@ -1,5 +1,8 @@
 # WindAnaly
 
+[![CI](https://github.com/kyarazhan/WindAnaly/actions/workflows/ci.yml/badge.svg)](
+https://github.com/kyarazhan/WindAnaly/actions/workflows/ci.yml)
+
 测风塔数据风资源分析软件（Windows 桌面单机版）。对标 Windographer 的工程
 工作流：载入各厂商测风原始数据 → 通道分类与质控标记 → 风资源分析 →
 报告与多格式导出。基于 PySide6 + pandas/numpy，自绘绘图引擎，零重型依赖。
@@ -30,6 +33,8 @@
 pip install -r requirements.txt
 python windanaly.py
 ```
+
+打包/发布另需：`pip install -r requirements-build.txt`
 
 ### 检查（提交/发布前必须全绿）
 

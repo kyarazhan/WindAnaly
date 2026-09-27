@@ -83,25 +83,27 @@ def smoke_exe() -> None:
 
 
 def find_baseline(new: str):
-    """在 release/ 找上一版全量包与其后的增量包，返回 (全量路径, [补丁...])。"""
+    """在 release/<版本>/ 各目录里找上一版全量包与其后的增量包。
+
+    返回 (基线版本号, 全量包路径, [补丁路径...])。"""
     fulls = []
-    for f in os.listdir(REL):
-        m = re.fullmatch(r'WindAnaly-(\d+(?:\.\d+)+)\.zip', f)
-        if m and vtuple(m.group(1)) < vtuple(new):
-            fulls.append((vtuple(m.group(1)), m.group(1), f))
+    patches = []
+    for dirpath, _dirs, files in os.walk(REL):
+        for f in files:
+            m = re.fullmatch(r'WindAnaly-(\d+(?:\.\d+)+)\.zip', f)
+            if m and vtuple(m.group(1)) < vtuple(new):
+                fulls.append((vtuple(m.group(1)), m.group(1),
+                              os.path.join(dirpath, f)))
+                continue
+            m = re.fullmatch(r'(\d+(?:\.\d+)+)-(\d+(?:\.\d+)+)-patch\.zip', f)
+            if m and vtuple(m.group(2)) <= vtuple(new):
+                patches.append((vtuple(m.group(1)), vtuple(m.group(2)),
+                                os.path.join(dirpath, f)))
     assert fulls, 'release/ 里没有历史全量包，无法制作增量包'
     fulls.sort()
-    _, base_v, base_zip = fulls[-1]
-    patches = []
-    for f in os.listdir(REL):
-        m = re.fullmatch(r'(\d+(?:\.\d+)+)-(\d+(?:\.\d+)+)-patch\.zip', f)
-        if not m:
-            continue
-        if vtuple(m.group(1)) >= vtuple(base_v) and vtuple(m.group(2)) <= vtuple(new):
-            patches.append((vtuple(m.group(1)), vtuple(m.group(2)), f))
-    patches.sort()
-    return base_v, os.path.join(REL, base_zip), \
-        [os.path.join(REL, p[2]) for p in patches]
+    base_v, base_zip = fulls[-1][1], fulls[-1][2]
+    chain = [p for p in sorted(patches) if p[0] >= vtuple(base_v)]
+    return base_v, base_zip, [p[2] for p in chain]
 
 
 def main():
@@ -112,6 +114,8 @@ def main():
     args = ap.parse_args()
     new = args.version
     os.makedirs(REL, exist_ok=True)
+    vdir = os.path.join(REL, new)          # 本版全部产物集中于此
+    os.makedirs(vdir, exist_ok=True)
 
     if not args.skip_build:
         build(new)
@@ -119,7 +123,7 @@ def main():
 
     # ---- 完整包 ----
     full_name = f'WindAnaly-{new}.zip'
-    full_path = os.path.join(REL, full_name)
+    full_path = os.path.join(vdir, full_name)
     shutil.make_archive(full_path[:-4], 'zip', root_dir=os.path.join(ROOT,
                                                                      'dist'),
                         base_dir='WindAnaly')
@@ -159,7 +163,7 @@ def main():
     changed.sort()
     base_full = base_v
     patch_name = f'{base_full}-{new}-patch.zip'
-    patch_path = os.path.join(REL, patch_name)
+    patch_path = os.path.join(vdir, patch_name)
     with zipfile.ZipFile(patch_path, 'w', zipfile.ZIP_DEFLATED,
                          compresslevel=9) as zf:
         for rel in changed:

@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Syntax compile
+        run: python -m compileall -q windanaly.py app.py build.py core ui updater tests
+
+      - name: Regression tests (incl. offscreen UI smoke)
+        run: python -X utf8 -m pytest tests -q

@@ -1,12 +1,12 @@
-"""PyInstaller 打包脚本（S5 模块化分发）：
+"""PyInstaller 打包脚本（S5 模块化分发 + B1 构建缓存）：
   WindAnaly.exe（引导桩，稳定）+ _internal/（第三方运行时，少变）
   + app/（业务代码 .pyc，常变）+ updater.exe（独立更新器）
 
-日常发版增量包只含 app/*.pyc 与 data/app_version.txt，KB~MB 级；
-exe/_internal 仅在依赖集合变化时进补丁。
+运行时与更新器按「输入指纹」缓存复用（build/cache/）：输入不变不重建，
+增量包回落到 app/*.pyc 的真实体积。业务层每次现编译。
 
 用法（在 venv 中）：
-    pip install pyinstaller
+    pip install -r requirements.txt -r requirements-build.txt
     python build.py            # 打包主程序 + 更新器
     python build.py --updater  # 只重建更新器
 
@@ -18,6 +18,8 @@ exe/_internal 仅在依赖集合变化时进补丁。
 from __future__ import annotations
 
 import ast
+import hashlib
+import importlib.metadata
 import os
 import py_compile
 import shutil
@@ -63,8 +65,104 @@ def _scan_hidden_imports() -> list[str]:
                     tops.add(a.name.split('.')[0])
             elif isinstance(n, ast.ImportFrom) and n.level == 0 and n.module:
                 tops.add(n.module.split('.')[0])
+    # updater 包的兄弟模块（feed/version）只被独立 updater.exe 使用，
+    # 运行时不需要也不是可安装的顶层包——过滤掉，消除 hidden-import 警告
+    tops -= {'feed', 'version'}
     return sorted(t for t in tops
                   if t not in LOCAL_PKGS and t not in EXCLUDES)
+
+
+# ---------------------------------------------------------------------------
+# 构建缓存（B1）：运行时与 updater 的产物按「输入指纹」复用。
+# PyInstaller 产物内嵌构建时间戳、每次字节全变，文件级 diff 会把
+# 没有任何变化的 10MB+ exe 打进补丁；输入不变时直接复用上一版产物，
+# 增量包即回落到 app/*.pyc 的真实体积。
+# ---------------------------------------------------------------------------
+CACHE = os.path.join(ROOT, 'build', 'cache')
+
+
+def _sha256_file(p: str) -> str:
+    h = hashlib.sha256()
+    with open(p, 'rb') as f:
+        for c in iter(lambda: f.read(1 << 20), b''):
+            h.update(c)
+    return h.hexdigest()
+
+
+def _toolchain_tag() -> str:
+    py = '%d.%d.%d' % sys.version_info[:3]
+    try:
+        pi = importlib.metadata.version('pyinstaller')
+    except Exception:
+        pi = 'unknown'
+    return f'py{py}-pyi{pi}'
+
+
+def _runtime_fingerprint(hidden: list[str]) -> str:
+    parts = [
+        open(os.path.join(ROOT, 'tools', 'boot_frozen.py'),
+             'rb').read(),
+        '|'.join(hidden),
+        '|'.join(EXCLUDES),
+    ]
+    for rel in ('ui/theme.qss', 'updater/sources.json',
+                'data/turbines.json', 'icon.png', 'icon.ico'):
+        parts.append(_sha256_file(os.path.join(ROOT, rel)))
+    parts.append(_toolchain_tag())
+    h = hashlib.sha256()
+    for p in parts:
+        h.update(p if isinstance(p, bytes) else p.encode('utf-8'))
+    return h.hexdigest()[:12]
+
+
+def _updater_fingerprint() -> str:
+    h = hashlib.sha256()
+    pkg = os.path.join(ROOT, 'updater')
+    for f in sorted(os.listdir(pkg)):
+        if f.endswith(('.py', '.spec', '.ico', '.json')):
+            h.update(f.encode('utf-8'))
+            h.update(_sha256_file(os.path.join(pkg, f)).encode('ascii'))
+    h.update(_toolchain_tag().encode('utf-8'))
+    return h.hexdigest()[:12]
+
+
+def _cache_fetch(cache_dir: str, dest_dir: str, label: str) -> bool:
+    """命中则把缓存内容复制到 dest_dir 并返回 True。"""
+    if not os.path.isdir(cache_dir):
+        return False
+    for root, dirs, files in os.walk(cache_dir):
+        rel = os.path.relpath(root, cache_dir)
+        target = os.path.join(dest_dir, rel) if rel != '.' else dest_dir
+        os.makedirs(target, exist_ok=True)
+        for f in files:
+            shutil.copy2(os.path.join(root, f), os.path.join(target, f))
+    print(f'{label}: 缓存命中 <- {os.path.basename(cache_dir)}')
+    return True
+
+
+def _cache_store(cache_dir: str, src_items: list[tuple[str, str]],
+                 keep: int = 2) -> None:
+    """把产物条目 [(源路径, 相对名)] 存入缓存并清理旧指纹目录。"""
+    if os.path.isdir(cache_dir):
+        shutil.rmtree(cache_dir)
+    os.makedirs(cache_dir, exist_ok=True)
+    for src, rel in src_items:
+        dst = os.path.join(cache_dir, rel)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        if os.path.isdir(src):
+            shutil.copytree(src, dst)
+        else:
+            shutil.copy2(src, dst)
+    parent = os.path.dirname(cache_dir)
+    prefix = os.path.basename(cache_dir).rsplit('-', 1)[0]
+    if os.path.isdir(parent):
+        entries = sorted(
+            (os.path.join(parent, d) for d in os.listdir(parent)
+             if d.startswith(prefix + '-')
+             and os.path.isdir(os.path.join(parent, d))),
+            key=os.path.getmtime, reverse=True)
+        for old in entries[keep:]:
+            shutil.rmtree(old, ignore_errors=True)
 
 
 def _compile_app_layer(dist_dir: str) -> None:
@@ -94,37 +192,49 @@ def _compile_app_layer(dist_dir: str) -> None:
 
 
 def build_app() -> None:
-    # ---- 1) 桩目录：只放引导桩，防止 modulegraph 把业务码打进 exe ----
-    stage = os.path.join(ROOT, 'build', 'stage')
-    shutil.rmtree(stage, ignore_errors=True)
-    os.makedirs(stage, exist_ok=True)
-    shutil.copy(os.path.join(ROOT, 'tools', 'boot_frozen.py'),
-                os.path.join(stage, 'boot_frozen.py'))
-
-    cmd = [
-        sys.executable, "-m", "PyInstaller",
-        "--name", "WindAnaly",
-        "--onedir",
-        "--windowed",
-        "--icon", os.path.join(ROOT, "icon.ico"),
-        "--add-data", _data("ui/theme.qss", "ui"),
-        "--add-data", _data("updater/sources.json", "updater"),
-        "--add-data", _data("data/turbines.json", "data"),
-        "--add-data", _data("icon.png", "."),
-        "--distpath", os.path.join(ROOT, "dist"),
-        "--workpath", os.path.join(ROOT, "build", "WindAnaly"),
-        "--specpath", stage,
-        "--clean", "--noconfirm",
-    ]
-    for h in _scan_hidden_imports():
-        cmd += ["--hidden-import", h]
-    for e in EXCLUDES:
-        cmd += ["--exclude-module", e]
-    cmd.append(os.path.join(stage, "boot_frozen.py"))
-    print("Running:", " ".join(cmd))
-    subprocess.run(cmd, check=True, cwd=stage)
-
     dist_dir = os.path.join(ROOT, "dist", "WindAnaly")
+    hidden = _scan_hidden_imports()
+    fp = _runtime_fingerprint(hidden)
+    cache_dir = os.path.join(CACHE, f"runtime-{fp}")
+
+    # ---- 1) 运行时（exe + _internal）：输入不变即复用缓存 ----
+    if _cache_fetch(cache_dir, dist_dir, "运行时"):
+        pass
+    else:
+        # 桩目录：只放引导桩，防止 modulegraph 把业务码打进 exe
+        stage = os.path.join(ROOT, "build", "stage")
+        shutil.rmtree(stage, ignore_errors=True)
+        os.makedirs(stage, exist_ok=True)
+        shutil.copy(os.path.join(ROOT, "tools", "boot_frozen.py"),
+                    os.path.join(stage, "boot_frozen.py"))
+
+        cmd = [
+            sys.executable, "-m", "PyInstaller",
+            "--name", "WindAnaly",
+            "--onedir",
+            "--windowed",
+            "--icon", os.path.join(ROOT, "icon.ico"),
+            "--add-data", _data("ui/theme.qss", "ui"),
+            "--add-data", _data("updater/sources.json", "updater"),
+            "--add-data", _data("data/turbines.json", "data"),
+            "--add-data", _data("icon.png", "."),
+            "--distpath", os.path.join(ROOT, "dist"),
+            "--workpath", os.path.join(ROOT, "build", "WindAnaly"),
+            "--specpath", stage,
+            "--clean", "--noconfirm",
+        ]
+        for h in hidden:
+            cmd += ["--hidden-import", h]
+        for e in EXCLUDES:
+            cmd += ["--exclude-module", e]
+        cmd.append(os.path.join(stage, "boot_frozen.py"))
+        print("Running:", " ".join(cmd))
+        subprocess.run(cmd, check=True, cwd=stage)
+        _cache_store(cache_dir,
+                     [(os.path.join(dist_dir, "WindAnaly.exe"),
+                       "WindAnaly.exe"),
+                      (os.path.join(dist_dir, "_internal"), "_internal")])
+        print("运行时: 已重建并入缓存")
 
     # ---- 2) 业务代码层 ----
     _compile_app_layer(dist_dir)
@@ -140,6 +250,14 @@ def build_app() -> None:
 
 
 def build_updater() -> None:
+    fp = _updater_fingerprint()
+    cache_dir = os.path.join(CACHE, f"updater-{fp}")
+    dist_dir = os.path.join(ROOT, "dist", "WindAnaly")
+    dst = os.path.join(dist_dir, "updater.exe")
+
+    if _cache_fetch(cache_dir, dist_dir, "更新器") and os.path.isfile(dst):
+        return
+
     cmd = [
         sys.executable, "-m", "PyInstaller",
         "updater.spec",
@@ -149,10 +267,10 @@ def build_updater() -> None:
     subprocess.run(cmd, check=True, cwd=os.path.join(ROOT, "updater"))
     # spec 产物在 updater/dist/updater.exe → 挪到主程序目录旁
     src = os.path.join(ROOT, "updater", "dist", "updater.exe")
-    dst = os.path.join(ROOT, "dist", "WindAnaly", "updater.exe")
     if os.path.exists(src):
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         os.replace(src, dst)
+        _cache_store(cache_dir, [(dst, "updater.exe")])
         print("更新器打包完成 →", dst)
     else:
         print("!! 未找到 updater/dist/updater.exe，请检查打包输出")
