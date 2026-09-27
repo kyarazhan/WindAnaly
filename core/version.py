@@ -4,5 +4,5 @@
 发版时只改本文件。
 """
 
-VERSION = '1.0.2'
+VERSION = '1.0.3'
 APP_NAME = 'WindAnaly'

@@ -162,10 +162,12 @@ io_import 仅靠既有用例间接覆盖，回归靠手测。
 **P6 无版本管理纪律。** 项目此前不在 git 中（本轮已补 .gitignore，建议尽快
 `git init` 后按 §5.2 的提交纪律工作）；历史脚本堆在 `_src/`（已清除）。
 
-**P7 功能缺口**（承自 ARCHITECTURE 旧档，仍有效）：MCP 缺 SpeedSort /
-Vertical Slice / Weibull Fit / Bulk SR 四算法；导入格式缺 ASC/ROW/NDF 解析、
-RLD/Triton/WindPortal/Kintech；计算列类型不全；数据库 SQL 导入导出菜单
-仍是占位。
+**P7 功能缺口**（2026-09-27 复核修正——旧档清单大半已过时）：
+~~MCP 缺 4 算法~~（已实现，`mcp_algorithms.py` 共 8 种且对话框全量暴露）；
+~~计算列类型不全~~（已实现 11 种，含 Accumulation/Moving Avg/Piecewise/
+Polynomial/REWS/Solar）；~~数据库 SQL 导入导出占位~~（`db_transfer.py` +
+LinkLibraryDialog 已落地）。**真实剩余**：ASC/ROW/NDF/RLD/Triton 仅有
+格式识别与通用解析兜底，无专用解析器（注册表已就位，缺格式规范与 fixture）。
 
 ---
 
@@ -270,12 +272,13 @@ RLD/Triton/WindPortal/Kintech；计算列类型不全；数据库 SQL 导入导�
 
 ### S4 · 功能迭代（持续，按价值排序）
 
-1. MCP 补齐 4 算法（SpeedSort / Vertical Slice / Weibull Fit / Bulk SR）；
-2. 计算列类型补全（Accumulation / Moving Avg / Piecewise / Polynomial / REWS）；
+1. ~~MCP 补齐 4 算法~~（复核：8 种已全部实现并有对话框入口）；
+2. ~~计算列类型补全~~（复核：11 种已实现）；
 3. 报告模板（Templates）与报告版式对齐 Windographer；
-4. 发布自动化 `release.py`：版本号注入 → build → 全量/增量 zip + sha256 →
-   versions.json 生成（照搬 WindVault_QT 成熟做法）；
-5. 数据库 SQL 导入/导出落地（替换占位菜单）。
+4. ~~发布自动化 `release.py`~~（✅ 1.0.3 完成：`tools/release.py <版本>
+   --notes "说明"` 一条龙出完整包/增量包/versions.json，基线自动重演）；
+5. ~~数据库 SQL 导入/导出~~（复核：db_transfer + 台账库链接已落地）；
+6. 新增导入格式专用解析器（ASC/ROW/NDF/RLD，注册表已就位，按需补）。
 
 ### S5 · 远期方向（评估后再立项）
 
