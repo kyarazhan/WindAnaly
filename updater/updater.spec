@@ -29,4 +29,5 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,
+    icon='updater_icon.ico',
 )

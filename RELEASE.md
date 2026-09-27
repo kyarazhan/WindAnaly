@@ -2,6 +2,14 @@
 
 以 v1.0.0 为例。前提：`run_checks.bat` 全绿。
 
+## 0. 发布物留存策略（1.0.2 起）
+
+- **本地**（`release/archives/`，gitignore）必须留存三件套：
+  ①完整包 `WindAnaly-<版本>.zip`；②增量包 `<旧>-<新>-patch.zip`；③源码归档
+  `WindAnaly_v<版本>_source_<日期>.zip`（`git archive` 自 tag 导出）。
+  增量包的基线依赖历史完整包，缺一样就无法给旧版本用户出补丁。
+- **GitHub Release** 只上传增量包 + `versions.json`（新用户走上一版全量包）。
+
 ## 1. 版本号
 
 `core/version.py` 改 `VERSION`（更新器、关于对话框、发布脚本共用此值）。

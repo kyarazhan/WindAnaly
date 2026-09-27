@@ -1,6 +1,6 @@
 # WindAnaly 重构、优化与迭代规划书
 
-> 版本：v1.3 · 2026-09-27（S2 第一批完成、v1.0.1 发布后更新）
+> 版本：v1.4 · 2026-09-27（S3 第一批完成、v1.0.2 发布后更新）
 > 基于对全量代码的审计（57 个 .py / 35,525 行）与本轮架构重组后的现状
 > 配套文档：[ARCHITECTURE.md](ARCHITECTURE.md)（新架构说明）
 
@@ -24,12 +24,27 @@
 **S2 剩余（第二批）**：`plot.py`（2,639，绘图引擎，风险最高单独立批）、
 `export_dialog.py`（2,094，先评估 10 格式 writer 可分性）。
 
-### 0.4 v1.0.1 发布记录（2026-09-27）
+## 0.4 v1.0.1 发布记录（2026-09-27）
 
 - S2 第一批重构随本版发布；按增量发布策略，Release 资产仅含
   `1.0.0-1.0.1-patch.zip` + `versions.json`（增量索引），不再上传全量包；
   新用户仍从 v1.0.0 全量包安装后增量升级。
 - 索引归档：`release/1.0.0/versions.json`、`release/1.0.1/versions.json`。
+
+## 0.5 S3 第一批完成记录（2026-09-27，随 v1.0.2 发布）
+
+| S3 项 | 结果 |
+|---|---|
+| 更新器图标 | `updater/updater_icon.ico`（圆角蓝底+循环刷新箭头+风车心，多尺寸 16-256）；绘制工具 `tools/make_updater_icon.py` 可复跑；updater.spec 已接入 |
+| S3-4 UI 冒烟入回归 | `tools/smoke_ui.run_smoke()` + `tests/test_smoke_ui.py`（offscreen）：主窗口+8 Tab+9 菜单+6 个主要对话框构造；pytest 总数 54→**65** |
+| S3-2 项目格式 v3 | `PROJECT_FORMAT=3` + `migrate_payload` 迁移链（v1→v2→v3，未来版本明确报错）；payload 新增 `app_version` 溯源；6 项迁移测试 |
+| S3-3 导入注册表化 | `io_import._PARSERS` + `register_parser`：专用解析器（Symphonie/Windographer/Molas/WRA）以 match 谓词注册，兜底链由注册表驱动；新格式零侵入接入；4 项测试 |
+| S3-1 性能基准 | `tools/bench.py`（1 年 10min×33 通道）：导入 1.62s→**1.30s**、8 Tab 全量刷新 1.29s→**0.79s**，目标 <1.5s 达标。优化点：`_as_num` 免重复整列 to_numeric、`_find_time_col` 跳过纯数字列、`_read_lines_robust` 限量嗅探 |
+| 发布物留存策略 | 本地 `release/archives/` 留存三件套（完整包/增量包/源码归档）；GitHub 只传增量包+versions.json（写入 RELEASE.md §0） |
+
+**S3 剩余（第二批）**：真 py-spy 深度 profile、`.windanaly` 内嵌通道快照、
+ASC/ROW/NDF/RLD 新格式解析器（注册表已就位，逐个补）。
+
 
 ---
 

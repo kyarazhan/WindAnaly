@@ -1,6 +1,7 @@
 """工程会话：持有全部数据集与当前选择。
 
-本阶段仅结构；load/open/save 等持久化待布局确认后接入 Library。
+项目文件持久化带 schema 版本（PROJECT_FORMAT）；旧版本文件由
+_MIGRATIONS 迁移链逐级升级，未来格式只增不改、迁移函数单独可测。
 """
 
 import os
@@ -8,6 +9,56 @@ import os
 import pandas as pd
 
 from core.dataset import Dataset
+
+# 项目文件 schema 当前版本。历史：
+#   1  WindKit 时代（无 version 字段或 version 缺失）
+#   2  WindRefine 重命名（结构同 1，显式 version 字段）
+#   3  WindAnaly（新增 app_version 溯源字段；channels/flag_masks 结构不变）
+PROJECT_FORMAT = 3
+
+
+def _migrate_1_2(p: dict) -> dict:
+    """v1 → v2：补显式 version 与必需键的缺省值（v1 时代键可能缺失）。"""
+    p.setdefault('version', 2)
+    p.setdefault('history', [])
+    p.setdefault('flag_masks', {})
+    p.setdefault('flag_registry', [])
+    p.setdefault('plot_settings', {})
+    p.setdefault('selection', {})
+    return p
+
+
+def _migrate_2_3(p: dict) -> dict:
+    """v2 → v3：补 app_version 溯源字段（未知来源留空）。"""
+    p.setdefault('app_version', '')
+    p['version'] = 3
+    return p
+
+
+_MIGRATIONS = {1: _migrate_1_2, 2: _migrate_2_3}
+
+
+def migrate_payload(p: dict) -> dict:
+    """把旧版本项目 payload 逐级迁移到 PROJECT_FORMAT。
+
+    无 version 字段视为最旧的 v1；比当前更新的版本 → 明确报错，
+    提示用户升级软件，避免静默丢数据。
+    """
+    try:
+        ver = int(p.get('version') or 1)
+    except (TypeError, ValueError):
+        ver = 1
+    if ver > PROJECT_FORMAT:
+        raise ValueError(
+            f'项目文件格式版本 v{ver} 比当前软件支持的 v{PROJECT_FORMAT} 更新，'
+            '请先升级软件再打开该文件。')
+    while ver < PROJECT_FORMAT:
+        step = _MIGRATIONS.get(ver)
+        if step is None:
+            raise ValueError(f'项目文件版本 v{ver} 缺少迁移路径')
+        p = step(p)
+        ver = int(p['version'])
+    return p
 
 
 class Project:
@@ -115,7 +166,16 @@ class Project:
         self.datasets.append(ds)
         self.active = len(self.datasets) - 1
 
-    # ---- 持久化：WindAnaly 项目文件（.windrefine JSON）----
+    # ---- 持久化：WindAnaly 项目文件（.windanaly JSON）----
+    @staticmethod
+    def _app_version() -> str:
+        """写入项目文件的软件版本（读取失败不阻塞保存）。"""
+        try:
+            from core.version import VERSION
+            return VERSION
+        except Exception:
+            return ''
+
     def save_project(self, path: str, source: dict | None = None):
         """保存当前分析会话到 .windrefine 文件。
 
@@ -127,8 +187,9 @@ class Project:
         if ds is None:
             raise RuntimeError('无活动数据集，无法保存项目')
         payload = {
-            'version': 2,
+            'version': PROJECT_FORMAT,
             'app': 'WindAnaly',
+            'app_version': self._app_version(),
             'source': source or getattr(self, '_source', None),
             'selection': self.selection,
             'plot_settings': self.plot_settings,
@@ -182,7 +243,7 @@ class Project:
         for enc in ('utf-8', 'cp1252', 'gbk', 'latin-1'):
             try:
                 with open(path, 'r', encoding=enc) as f:
-                    p = json.load(f)
+                    p = migrate_payload(json.load(f))
                 break
             except UnicodeDecodeError as e:
                 last_err = e

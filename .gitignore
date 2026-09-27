@@ -8,5 +8,6 @@ data/boot_error.log
 data/windkit.db
 data/settings.json
 .pytest_cache/
+outputs/
 *.zip
-WindAnaly.spec  
+WindAnaly.spec

@@ -255,6 +255,23 @@ _FMT_MARKERS = (
     ('Kintech', ('Kintech', 'KINTECH')),
 )
 
+# ---------------------------------------------------------------------------
+# 专用解析器注册表（S3 插件化入口）
+# ---------------------------------------------------------------------------
+# 条目 = {'name': 展示名, 'match': (path, sniff_head)->bool, 'parser': (path)}
+# 注册顺序即兜底探测优先级（注册调用在模块尾部，解析函数定义之后）。
+# 新增格式：实现 _parse_xxx(path) -> ParsedData + 一个 match 谓词，
+# 在文件尾部「解析器注册区」加一行 register_parser(...) 即可。
+_PARSERS: list[dict] = []
+
+
+def register_parser(name: str, match):
+    """装饰器/直调两用：把专用解析器登记进 _PARSERS（保持注册顺序）。"""
+    def deco(fn):
+        _PARSERS.append({'name': name, 'match': match, 'parser': fn})
+        return fn
+    return deco
+
 
 def detect_special_format(path: str, header_text: str = '') -> str:
     """返回识别到的专用格式名；未识别返回 ''。"""
@@ -284,7 +301,9 @@ def parse_file(path: str) -> ParsedData:
       1. Excel 走 _parse_excel；
       2. NRG 二进制 .rld/.ndf 直接给出友好提示（需先用官方软件导出文本）；
       3. 其余统一走 _parse_universal（自动编码、自动定位表头、按列名语义识别通道）；
-      4. 若通用解析结果明显不佳（无风速/风向通道且列数过少），再回退到旧版精确解析器。
+      4. 若通用解析结果明显不佳（无风速/风向通道且列数过少），按 _PARSERS
+         注册顺序探测专用解析器（S3 插件化：新增格式只需写解析函数并在
+         模块尾部的注册区加一行，不再改动本函数）。
     """
     low = path.lower()
     if low.endswith('.xlsx') or low.endswith('.xls'):
@@ -298,7 +317,7 @@ def parse_file(path: str) -> ParsedData:
     else:
         sniff_head = ''
         try:
-            sniff_head = ''.join(_read_lines_robust(path)[:200])
+            sniff_head = ''.join(_read_lines_robust(path, max_lines=200))
         except Exception:
             pass
         fmt = detect_special_format(path, sniff_head)
@@ -311,21 +330,15 @@ def parse_file(path: str) -> ParsedData:
             # 默认统一通用识别
             parsed = _parse_universal(path)
 
-            # 通用识别失败/太弱时，尝试旧版专用解析器作为后备
+            # 通用识别失败/太弱时，按注册表顺序探测专用解析器作为后备
             recognized = [c for c in parsed.channels
                           if c.get('kind') in (KIND_SPEED, KIND_DIR, KIND_TEMP,
                                                KIND_PRES, KIND_RH)]
             if len(recognized) < 2 and len(parsed.channels) < 3:
-                if 'SymphoniePRO' in sniff_head or 'NRG Systems' in sniff_head:
-                    parsed = _parse_symphonie(path)
-                elif 'Windographer' in sniff_head:
-                    parsed = _parse_windographer(path)
-                elif ('ID System=' in sniff_head and 'Range Gate' in sniff_head) or 'Molas' in sniff_head:
-                    parsed = _parse_molas(path)
-                elif ('Elevation' in sniff_head
-                      and ('SPEED' in sniff_head or 'Speed' in sniff_head
-                           or 'speed' in sniff_head)):
-                    parsed = _parse_wra_standard(path)
+                for entry in _PARSERS:
+                    if entry['match'](path, sniff_head):
+                        parsed = entry['parser'](path)
+                        break
 
         # 记录识别到的专用格式；Triton 等雷达格式补充设备类型
         if fmt:
@@ -846,16 +859,30 @@ _WRA_COL_RE2 = re.compile(
 # ----------------------------------------------------------------------
 # 鲁棒读取（编码回退：utf-8 → cp1252 → latin-1 永不失败）
 # ----------------------------------------------------------------------
-def _read_lines_robust(path: str) -> list:
-    """读取文件全部行，自动回退编码。latin-1 对每个字节 1:1 解码，永不抛错。"""
+def _read_lines_robust(path: str, max_lines: int | None = None) -> list:
+    """读取文件行（max_lines 限量），自动回退编码。latin-1 对每个字节
+    1:1 解码，永不抛错。"""
+    import itertools
     for enc in ('utf-8', 'cp1252', 'latin-1'):
         try:
             with open(path, 'r', encoding=enc) as f:
-                return f.readlines()
+                if max_lines is None:
+                    return f.readlines()
+                return list(itertools.islice(f, max_lines))
         except UnicodeDecodeError:
             continue
     with open(path, 'r', encoding='latin-1') as f:
-        return f.readlines()
+        if max_lines is None:
+            return f.readlines()
+        return list(itertools.islice(f, max_lines))
+
+
+def _as_num(s: pd.Series) -> pd.Series:
+    """按需转数值：已是数值 dtype 的列原样返回（S3 性能：避免整列反复
+    to_numeric，大数据集上占导入耗时的 ~20%）。"""
+    if pd.api.types.is_numeric_dtype(s.dtype):
+        return s
+    return pd.to_numeric(s, errors='coerce')
 
 
 def read_csv_robust(path: str, **kw):
@@ -1270,8 +1297,14 @@ def _sniff_delimiter(path: str) -> str:
 
 def _find_time_col(df: pd.DataFrame) -> str | None:
     best, best_rate = None, 0.0
+    num_re = re.compile(r'^\s*-?\d+(\.\d+)?\s*$')
     for col in df.columns:
         if df[col].dtype.kind == 'O':   # object 字符串列才尝试解析时间
+            head = df[col].astype(str).head(8)
+            # 纯数字列不可能是时间戳，跳过（省去逐列 to_datetime 试探）
+            sample = [t for t in head if str(t).strip() and str(t) != 'nan']
+            if sample and all(num_re.match(str(t)) for t in sample):
+                continue
             # 嗅探阶段仅解析前 200 行，禁用 to_datetime 的格式推断警告噪声
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore')
@@ -1590,7 +1623,7 @@ def _refine_by_stats(df: pd.DataFrame, channels: list):
         col = ch.get('name')
         if col not in df.columns:
             continue
-        s = pd.to_numeric(df[col], errors='coerce').dropna()
+        s = _as_num(df[col]).dropna()
         if s.empty:
             continue
         vmin, vmax, vmean = float(s.min()), float(s.max()), float(s.mean())
@@ -1630,7 +1663,7 @@ def _refine_by_stats(df: pd.DataFrame, channels: list):
             continue
         vals = []
         for ch in members:
-            s = pd.to_numeric(df[ch['name']], errors='coerce').dropna()
+            s = _as_num(df[ch['name']]).dropna()
             vals.append(float(s.mean()) if len(s) else float('nan'))
         order = sorted(range(len(members)), key=lambda i: vals[i])
         # 单列标准差：均值明显小于同组其它列且非负 → SD
@@ -1669,7 +1702,7 @@ def _compute_stats(df: pd.DataFrame, channels: list) -> list:
         col = c['name']
         if col not in df.columns:
             continue
-        s = pd.to_numeric(df[col], errors='coerce')
+        s = _as_num(df[col])
         n = len(s)
         valid = int(s.notna().sum())
         avail = valid / n if n else 0.0
@@ -1700,3 +1733,30 @@ def _fnum(s: str):
         return float(s)
     except Exception:
         return float('nan')
+
+
+# ---------------------------------------------------------------------------
+# 解析器注册区（S3：新增专用格式在此登记，注册顺序 = 兜底探测优先级）
+# ---------------------------------------------------------------------------
+def _match_symphonie(path: str, head: str) -> bool:
+    return 'SymphoniePRO' in head or 'NRG Systems' in head
+
+
+def _match_windographer(path: str, head: str) -> bool:
+    return path.lower().endswith('.rwd') or 'Windographer' in head
+
+
+def _match_molas(path: str, head: str) -> bool:
+    return (('ID System=' in head and 'Range Gate' in head)
+            or 'Molas' in head)
+
+
+def _match_wra_standard(path: str, head: str) -> bool:
+    return ('Elevation' in head
+            and ('SPEED' in head or 'Speed' in head or 'speed' in head))
+
+
+register_parser('NRG Symphonie', _match_symphonie)(_parse_symphonie)
+register_parser('Windographer 文本', _match_windographer)(_parse_windographer)
+register_parser('Molas 雷达', _match_molas)(_parse_molas)
+register_parser('WRA 标准列名', _match_wra_standard)(_parse_wra_standard)
