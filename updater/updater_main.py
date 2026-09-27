@@ -163,10 +163,11 @@ def extract_preserve_data(zip_path, app_dir):
     （Windows 锁定运行中的 exe，直接覆盖必报 Permission denied），
     因此先跳过，解压完再"改名腾位 → 写入新版"自替换。"""
     # 防呆：完整包必须有根级 WindAnaly.exe；纯差量补丁至少要有
-    # _internal/ 下的变更文件（源码存档 zip 两者皆无，拒绝安装）
+    # _internal/ 下的变更文件（源码存档 zip 两者皆无，拒绝安装）。
+    # 校验必须用 _zip_entries 归一化后的路径——完整包带顶层文件夹
+    # （WindAnaly/…），用原始条目名会把有效包误判为无效（1.0.5 修复）
     with zipfile.ZipFile(zip_path, 'r') as zf:
-        rels = [i.filename.replace('\\', '/').lstrip('/')
-                for i in zf.infolist() if not i.is_dir()]
+        rels = [rel for _, rel in _zip_entries(zf)]
         has_exe = any(r == APP_EXE_DEFAULT for r in rels)
         has_internal = any(r.startswith('_internal/') for r in rels)
         has_app = any(r.startswith('app/') for r in rels)
