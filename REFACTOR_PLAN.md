@@ -1,8 +1,35 @@
 # WindAnaly 重构、优化与迭代规划书
 
-> 版本：v1.2 · 2026-09-27（S1 完成、v1.0.0 发布后更新）
+> 版本：v1.3 · 2026-09-27（S2 第一批完成、v1.0.1 发布后更新）
 > 基于对全量代码的审计（57 个 .py / 35,525 行）与本轮架构重组后的现状
 > 配套文档：[ARCHITECTURE.md](ARCHITECTURE.md)（新架构说明）
+
+---
+
+## 0.3 S2 第一批完成记录（2026-09-27，随 v1.0.1 发布）
+
+巨型文件拆分 6 个中已完成 4 个（全部「行为不变」，每步 run_checks 全绿）：
+
+| 原文件 | 拆分结果 |
+|---|---|
+| `app.py`（2,008 → **875** 行） | `core/loader.py`（格式常量/merge_frames/scan_data_files 纯函数）+ `ui/app_menus.py`（MenusMixin：菜单/工具栏/重翻译）+ `ui/app_project.py`（ProjectIoMixin：项目文件+最近文件）+ `ui/app_loader.py`（LoaderMixin：装载/来源解析）；app.py 只留装配与动作分发 |
+| `revise_dialogs.py`（2,692 → shim） | `ui/dialogs/revise/` 包：_common + 每对话框一文件（7 个）；原模块变纯 re-export shim，导入路径不变 |
+| `analysis_dialogs.py`（1,964 → shim） | `ui/dialogs/analysis/` 包：_common + basic/energy/advanced 三组；shim 同上 |
+| `analysis_tabs.py`（1,808 → shim） | `ui/modules/tabs/` 包：_common（基类+助手）+ summary/time_series/simple/reports；shim 同上 |
+
+拆分方法约定（后续批次沿用）：行段机械搬移、Mixin/self 经 MRO 运行期解析、
+共享助手进 `_common.py`、原模块保留为 re-export shim（外部导入零改动）、
+每拆一个跑 compileall+pytest+GUI 冒烟。
+
+**S2 剩余（第二批）**：`plot.py`（2,639，绘图引擎，风险最高单独立批）、
+`export_dialog.py`（2,094，先评估 10 格式 writer 可分性）。
+
+### 0.4 v1.0.1 发布记录（2026-09-27）
+
+- S2 第一批重构随本版发布；按增量发布策略，Release 资产仅含
+  `1.0.0-1.0.1-patch.zip` + `versions.json`（增量索引），不再上传全量包；
+  新用户仍从 v1.0.0 全量包安装后增量升级。
+- 索引归档：`release/1.0.0/versions.json`、`release/1.0.1/versions.json`。
 
 ---
 
