@@ -273,7 +273,20 @@ tools/release.py <版本> --notes "…"` → push/tag → GitHub Release 只传
 
 ## 6. 批次记录（滚动更新）
 
-- （待填：B1 → v1.0.6）
+### B1+B2+B3 完成（2026-09-27，随 v1.0.6 发布）
+
+| 批次 | 结果 |
+|---|---|
+| B1 构建缓存 | `build/cache/` 按输入指纹复用运行时与更新器产物：第二次构建验证「运行时: 缓存命中 / 更新器: 缓存命中」，零 PyInstaller 重建；`feed`/`version` hidden-import 警告清零 |
+| B2 CI | `.github/workflows/ci.yml`（windows-latest + py3.14 + offscreen pytest）；requirements 拆分（打包依赖移入 requirements-build.txt）；README badge |
+| B3 export 拆分 | `ui/dialogs/export/` 包：_common + 10 个格式 Tab 文件；门面 65 行；app 层 .pyc 77→89 |
+| 更新器图标 v2 | 扁平渐变 + 刷新环 + 下载箭头（预览确认） |
+| 发布目录 | 版本包归档重构为 `release/<版本>/`（完整包/增量包/源码归档/索引），历史 1.0.0–1.0.5 已迁移并补齐 1.0.0/1.0.1 源码归档 |
+
+**v1.0.6 补丁说明**：18 文件 / 21.7MB，含一次性运行时基线切换（模块化后
+首次以缓存构建替换 1.0.5 时代的 exe 字节）+ 新图标 updater.exe + export
+包新增文件。**自 v1.0.7 起验证 KB 级目标**：仅业务码变更时，exe/运行时
+因缓存命中而字节不变，diff 只剩 app/*.pyc。
 
 ---
 
