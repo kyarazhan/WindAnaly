@@ -44,8 +44,9 @@ python build.py       :: 生成 dist\WindAnaly\（WindAnaly.exe + updater.exe）
 ```
 
 发版 SOP 见 [RELEASE.md](RELEASE.md)，架构说明见
-[ARCHITECTURE.md](ARCHITECTURE.md)，迭代路线图见
-[REFACTOR_PLAN.md](REFACTOR_PLAN.md)。
+[ARCHITECTURE.md](ARCHITECTURE.md)，第一阶段重构记录见
+[REFACTOR_PLAN.md](REFACTOR_PLAN.md)，第二阶段规划见
+[ROADMAP.md](ROADMAP.md)。
 
 ## 目录结构
 
