@@ -1,0 +1,14 @@
+{
+  "versions": [
+    {
+      "version": "1.0.7",
+      "date": "2026-09-27",
+      "changelog": "文档与小修复：项目文件相关注释与 docstring 更正（.windrefine → .windanaly）。本补丁为 KB 级验证版——仅含业务层字节码与版本文件，运行时与更新器未变。",
+      "patch": {
+        "base": "1.0.6",
+        "url": "1.0.6-1.0.7-patch.zip",
+        "sha256": "4316b21ab6034b3589288e498a9b5bde547ccaa0709a628b29fcecbce4044c18"
+      }
+    }
+  ]
+}

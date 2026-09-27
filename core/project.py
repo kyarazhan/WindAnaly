@@ -177,7 +177,7 @@ class Project:
             return ''
 
     def save_project(self, path: str, source: dict | None = None):
-        """保存当前分析会话到 .windrefine 文件。
+        """保存当前分析会话到 .windanaly 项目文件。
 
         source 记录数据来源（{'type':'file'/'library','path'/'ds_id','name'}），
         恢复时据此重新解析原始数据，再叠加通道分类与剔除标记，
@@ -229,7 +229,7 @@ class Project:
         self._last_project_path = path
 
     def load_project(self, path: str):
-        """从 .windrefine 文件恢复会话。
+        """从 .windanaly（或旧版 .windrefine）文件恢复会话。
 
         流程：解析 source → 重建 Dataset 与通道 → 应用 import_meta 的分类/启用
         → 恢复剔除标记 → 还原 selection。"""
@@ -237,7 +237,7 @@ class Project:
         from core.io_import import parse_file
         from core.dataset import Channel
 
-        # 编码回退：.windrefine 项目文件理论上为 utf-8，
+        # 编码回退：项目文件理论上为 utf-8，
         # 但若用户误选原始数据文件（含 0xb0 等字节），友好降级而不是直接抛编码错。
         last_err = None
         for enc in ('utf-8', 'cp1252', 'gbk', 'latin-1'):
