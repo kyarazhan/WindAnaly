@@ -1,0 +1,950 @@
+app.py:1: WindAnaly：测风塔数据风资源分析工作台（主窗口）。
+
+入口 windanaly.py 创建本窗口；构造时接受 dataset_spec（台账库序号或
+文
+app.py:76: WindAnaly 主窗口。
+
+    顶部为 Windographer 风格一级 Tab（Summary/Time Series/Wind Rose/...）
+app.py:120: 就绪 · 未载入数据集 · 可「数据管理软件」载入
+app.py:169: 本软件打开的可见子窗口（QMainWindow，不含主窗口与启动器）。
+app.py:205: 导出翻译对照表 CSV 供用户编辑。
+app.py:219: 导入用户编辑后的翻译对照表。
+app.py:235: 新建一个 WindAnaly 窗口。
+app.py:239: 已新建窗口
+app.py:242: 访问项目主页（GitHub 仓库）。
+app.py:249: 查看版本历史（GitHub Releases 页，含各版更新说明）。
+app.py:256: 关于对话框。
+app.py:259: 关于 WindAnaly
+app.py:260: <br>测风塔数据风资源分析工作台<br><br>基于 PySide6 构建，参考 Windographer 工程方法设计。
+app.py:260: <br>测风塔数据风资源分析工作台<br><br>基于 PySide6 构建，参考 Windographer 工程方法设计。
+app.py:264: 打开 Configure Data Set 对话框。
+app.py:267: 无数据
+app.py:267: 请先载入数据集
+app.py:274:  通道启用
+app.py:274:  通道启用
+app.py:274: 配置数据集
+app.py:276:  通道启用
+app.py:276:  通道启用
+app.py:276: 数据集已配置：
+app.py:276: 数据集已配置：
+app.py:279: 打开 Calibration 校准对话框。
+app.py:282: 无数据
+app.py:282: 请先载入数据集
+app.py:287: 已更新校准常量
+app.py:287: 校准
+app.py:288: 校准常量已更新
+app.py:292: 修正类功能的统一数据守卫。
+app.py:295: 无数据
+app.py:295: 请先载入数据集
+app.py:308: 应用比例与偏移
+app.py:309: 已应用比例与偏移
+app.py:319: 应用时移
+app.py:320: 平移 
+app.py:320: 平移 
+app.py:321: 已应用时移
+app.py:332: 删除数据
+app.py:333: 已删除数据
+app.py:343: 插补缺失值
+app.py:344: 已插补缺失值
+app.py:354: 修复量化
+app.py:355: 已修复量化
+app.py:366: 组合风速仪
+app.py:367: 已组合风速仪
+app.py:378: 垂直外推
+app.py:379: 已垂直外推
+app.py:382: 打开语言设置。
+app.py:387: 无数据
+app.py:390: 请先载入数据集
+app.py:402: 手动标记
+app.py:403: 手动标记已应用
+app.py:413: 散点图标记
+app.py:414: 散点图标记已应用
+app.py:424: 规则标记
+app.py:425: 规则标记已执行
+app.py:435: 塔影标记
+app.py:436: 塔影标记已执行
+app.py:446: 检查标记
+app.py:447: 标记已检查
+app.py:455: 定义标记
+app.py:455: 已更新标记类型
+app.py:456: 标记类型已更新
+app.py:464: 定义常用标记
+app.py:464: 已更新常用标记
+app.py:465: 常用标记已更新
+app.py:665: 保存截图
+app.py:666: PNG 图像 (*.png);;所有文件 (*.*)
+app.py:669: 截图已保存：
+app.py:669: 截图已保存：
+app.py:674: 无数据
+app.py:674: 无数据可导出
+app.py:685: 无数据
+app.py:685: 请先载入数据集
+app.py:688: 标记剔除
+app.py:688: 起始时间 (YYYY-MM-DD HH:MM)：
+app.py:692: 标记剔除
+app.py:692: 结束时间 (YYYY-MM-DD HH:MM)：
+app.py:699: 标记失败
+app.py:702:  个时间点
+app.py:702:  个时间点
+app.py:702: 已标记剔除：
+app.py:702: 已标记剔除：
+app.py:703:  点
+app.py:703:  点
+app.py:703: 标记剔除
+app.py:711: 已清除全部剔除标记
+app.py:716: 无数据
+app.py:716: 无数据
+app.py:721: 剔除统计
+app.py:722: 
+已剔除：
+app.py:722: 
+已剔除：
+app.py:722: 
+总点数：
+app.py:722: 
+总点数：
+app.py:722: 数据集：
+app.py:722: 数据集：
+app.py:743: 把子对话框定位到菜单栏+工具栏下方，避免遮挡顶部操作区。
+app.py:759: 按 settings['analy_tabs_visible'] 恢复各 Tab 的显示状态。
+
+        兼容旧版中文 Tab 名：自动映射为英文底座并
+app.py:768: 日变化
+app.py:792: 勾选/取消首页展示中的 Tab，控制其在主窗口的显示。
+app.py:828: 每次显示都强制顶部栏可见，并同步顶栏高度（工具栏可能已换行）。
+app.py:843: 窗口缩放时刷新顶部栏几何诊断，并同步顶栏高度。
+app.py:854: 原临时诊断已移除；保留空方法避免调用点改动。
+app.py:859: 独立运行 WindAnaly（可携带来源 spec）。
+
+    confirm=True 时载入原始文件会弹出通道确认对话框。
+ui\app_loader.py:1: LoaderMixin：数据装载与来源解析（打开/增加/目录合并/台账库链接）。"
+
+从 app.py 拆出（S2）。纯合并/扫描逻辑在 core/loader
+ui\app_loader.py:72: 打开：既支持 .windanaly/.windrefine 项目，也支持各厂商原始数据格式。
+ui\app_loader.py:74: 打开
+ui\app_loader.py:87: 从测风塔台账数据库链接数据集，或直接打开台账数据库。
+ui\app_loader.py:92: 把当前活动数据集导出到台账数据库（internal 宽表）。
+ui\app_loader.py:106: 导出到数据库
+ui\app_loader.py:106: 序列号 
+ui\app_loader.py:106: 序列号 
+ui\app_loader.py:116: 打开文件夹：递归读取目录及所有子目录里的数据文件，合并为一个数据集。
+ui\app_loader.py:117: 打开文件夹
+ui\app_loader.py:123: 无数据文件
+ui\app_loader.py:124: 该目录及其子目录下未找到支持的数据文件。
+
+支持的后缀：
+ui\app_loader.py:124: 该目录及其子目录下未找到支持的数据文件。
+
+支持的后缀：
+ui\app_loader.py:133: 增加：把新数据文件的通道拼接/覆盖到已打开的数据上。
+ui\app_loader.py:135: 增加数据
+ui\app_loader.py:145: 增加目录：递归读取目录及所有子目录的数据，拼接到已打开的数据上。
+ui\app_loader.py:146: 增加目录
+ui\app_loader.py:152: 无数据文件
+ui\app_loader.py:153: 该目录及其子目录下未找到支持的数据文件。
+
+支持的后缀：
+ui\app_loader.py:153: 该目录及其子目录下未找到支持的数据文件。
+
+支持的后缀：
+ui\app_loader.py:162: 关闭当前数据集。
+ui\app_loader.py:165: 关闭数据集
+ui\app_loader.py:170: 已关闭数据集
+ui\app_loader.py:175: 解析 dataset_spec（library:<ds_id> / file:<路径>）载入 Project。
+
+        confirm 控制是否弹出通
+ui\app_loader.py:185: 未找到数据集（id=
+ui\app_loader.py:185: 未找到数据集（id=
+ui\app_loader.py:185: ），可能已被删除
+ui\app_loader.py:185: ），可能已被删除
+ui\app_loader.py:198: 文件不存在：
+ui\app_loader.py:198: 文件不存在：
+ui\app_loader.py:203: 未知
+ui\app_loader.py:207: 无法识别的数据集标识：
+ui\app_loader.py:207: 无法识别的数据集标识：
+ui\app_loader.py:259: 用户取消配置数据集，导入已中止
+ui\app_loader.py:270: 载入数据
+ui\app_loader.py:271:  行 · 
+ui\app_loader.py:271:  行 · 
+ui\app_loader.py:271:  通道
+ui\app_loader.py:271:  通道
+ui\app_loader.py:272:  行 · 
+ui\app_loader.py:272:  行 · 
+ui\app_loader.py:272: 已载入：
+ui\app_loader.py:272: 已载入：
+ui\app_loader.py:273:  通道（启用）
+ui\app_loader.py:273:  通道（启用）
+ui\app_loader.py:277: 载入失败：
+ui\app_loader.py:277: 载入失败：
+ui\app_loader.py:284: 解析一个或多个数据文件并载入。
+
+        mode='open'   → 替换当前数据集（打开 / 打开文件夹）
+        mode='appen
+ui\app_loader.py:294: 未选择任何文件
+ui\app_loader.py:311: : 无有效数据行
+ui\app_loader.py:311: : 无有效数据行
+ui\app_loader.py:326: 所选文件均无法解析为测风数据
+ui\app_loader.py:353: 未知
+ui\app_loader.py:355:  个文件）
+ui\app_loader.py:355:  个文件）
+ui\app_loader.py:359:  个文件
+ui\app_loader.py:359:  个文件
+ui\app_loader.py:391: 用户取消配置数据集，导入已中止
+ui\app_loader.py:412: 增加数据
+ui\app_loader.py:412: 载入数据
+ui\app_loader.py:413:  行 · 
+ui\app_loader.py:413:  行 · 
+ui\app_loader.py:413:  通道
+ui\app_loader.py:413:  通道
+ui\app_loader.py:414: 已增加
+ui\app_loader.py:414: 已载入
+ui\app_loader.py:417:  个文件跳过）
+ui\app_loader.py:417:  个文件跳过）
+ui\app_loader.py:418:  行 · 
+ui\app_loader.py:418:  行 · 
+ui\app_loader.py:419:  通道
+ui\app_loader.py:419:  通道
+ui\app_loader.py:422: 根据通道类型设定默认活动通道。
+ui\app_loader.py:442: 弹窗让用户选择库内数据集或 CSV 文件。
+ui\app_loader.py:443: CSV/TXT 原始文件
+ui\app_loader.py:443: 台账库内数据集
+ui\app_loader.py:446: 打开数据
+ui\app_loader.py:446: 数据来源：
+ui\app_loader.py:452:  · 序列号 
+ui\app_loader.py:452:  · 序列号 
+ui\app_loader.py:455: 台账库中暂无数据集
+ui\app_loader.py:455: 无数据
+ui\app_loader.py:457: 数据集：
+ui\app_loader.py:457: 选择数据集
+ui\app_loader.py:466: 选择原始数据文件
+ui\app_loader.py:467: 测风数据文件 (*.txt *.csv *.xls *.xlsx *.asc *.sta *.row *.rwd *.rld *.ndf);;所有文件 (*.*
+ui\app_menus.py:1: MenusMixin：主窗口菜单/工具栏构建、语言重翻译、自定义工具栏对话框。
+
+从 app.py 拆出（S2）。仅包装「界面骨架」，动作 handler 仍在
+ui\app_menus.py:369: 按当前 language 刷新菜单、动作、Tab 文案。
+ui\app_menus.py:410: 创建 QAction 并注册到 self._actions，供工具栏复用。
+
+        text 为中文 base；setData 保存原文以便切换语言时
+ui\app_menus.py:429: 根据 settings['analy_toolbar'] 刷新工具栏按钮（彩色图标）。
+ui\app_menus.py:461: 返回工具栏按钮图标；缺失时返回空图标（纯文字）。
+ui\app_menus.py:465: 快捷工具栏换行增高时同步顶栏高度（菜单栏 24 + 工具栏高度）。
+
+        窗口销毁期间信号可能晚到，此时顶栏 C++ 对象或已析构——忽略。
+ui\app_menus.py:474: 弹出对话框，让用户自定义工具栏展示的动作。
+ui\app_menus.py:476: 自定义工具栏
+ui\app_menus.py:588: 取消
+ui\app_menus.py:589: 确定
+ui\app_project.py:1: ProjectIoMixin：项目文件（.windanaly）新建/保存/载入 + 最近文件管理。"
+
+从 app.py 拆出（S2）。仅包装「项目持久化」，s
+ui\app_project.py:69: 新建项目：清空当前会话。
+ui\app_project.py:75: 已新建项目
+ui\app_project.py:78: 保存项目；若已有路径则直接覆盖，否则弹出另存为。
+ui\app_project.py:85: 另存为项目。
+ui\app_project.py:88: 无数据
+ui\app_project.py:88: 请先载入数据集再保存项目
+ui\app_project.py:91: WindAnaly项目.windanaly
+ui\app_project.py:91: 另存为
+ui\app_project.py:92: WindAnaly 项目 (*.windanaly);;所有文件 (*.*)
+ui\app_project.py:97: 实际保存项目到 path，并更新最近文件。
+ui\app_project.py:105: 项目已保存：
+ui\app_project.py:105: 项目已保存：
+ui\app_project.py:106: 保存项目
+ui\app_project.py:108: 保存失败
+ui\app_project.py:111: 向 settings 写入一条最近文件/项目记录，最多保留 3 条。
+ui\app_project.py:120: 刷新文件菜单的「最近文件」子菜单。
+ui\app_project.py:126: (无)
+ui\app_project.py:138: 文件不存在
+ui\app_project.py:138: 路径已失效：
+ui\app_project.py:138: 路径已失效：
+ui\app_project.py:150: 打开指定路径的项目文件；若用户误选数据文件，自动降级为打开数据。
+ui\app_project.py:159: 打开失败
+ui\app_project.py:170:  点）
+ui\app_project.py:170:  点）
+ui\app_project.py:170: 项目已恢复：
+ui\app_project.py:170: 项目已恢复：
+ui\app_project.py:170: （剔除 
+ui\app_project.py:170: （剔除 
+ui\app_project.py:171: 恢复项目
+ui\app_project.py:173: 打开失败
+ui\dialogs\__init__.py:1: 对话框包：WindAnaly 各功能模态对话框。
+ui\dialogs\analysis\__init__.py:1: Analyze 菜单 16 个分析对话框（按语义分组，S2 拆分）。
+ui\dialogs\analysis\_common.py:1: 本包各对话框共享的助手与基类（S2 拆分聚集）。
+ui\dialogs\analysis\_common.py:54: 启发式从通道名中提取高度(m)。
+ui\dialogs\analysis\_common.py:67: 幂律拟合 v = v_ref * (z/z_ref)^alpha；返回 (alpha, fit_values)。
+ui\dialogs\analysis\_common.py:82: 对数律拟合 u = (u_star/kappa)*ln(z/z0)；返回 (u_star, fit_values)。
+ui\dialogs\analysis\_common.py:98: 无 scipy 时的简化 Weibull 矩估计：返回 (k, c)。
+ui\dialogs\analysis\_common.py:121: 带全选复选框的多选列表。
+ui\dialogs\analysis\_common.py:162: 通用 Filter by 区域：Flag / Date / Date range / Direction / Data column min/max。
+ui\dialogs\analysis\_common.py:241: Analyze 对话框通用骨架：左控制 / 右结果，底部 Help/Close。
+ui\dialogs\analysis\_common.py:291: 子类覆写：在 self.left_lay 中添加控制项。
+ui\dialogs\analysis\_common.py:295: 子类覆写：在 self.right_lay 中添加图表/表格。
+ui\dialogs\analysis\_common.py:299: 子类覆写：根据控件状态刷新结果。
+ui\dialogs\analysis\_common.py:303: 基于 Flag 勾选返回基础掩码（未实现复杂筛选，仅保留未标记）。
+ui\dialogs\analysis\advanced.py:1: advanced.py：见 _common 与 shim。
+ui\dialogs\analysis\advanced.py:32: 短时间间隔分析：逐区间查看廓线 / 矢量平均方向 / 时间序列。
+ui\dialogs\analysis\advanced.py:217: 长期分析：年际变化 / 逐月逐时轮廓 / 频率玫瑰 / 累计 IAV（手册 11.11）。
+ui\dialogs\analysis\advanced.py:269: 年际变化 IAV（%）= 年均值标准差 / 年均值均值 × 100。
+ui\dialogs\analysis\advanced.py:372: Annual means / IAV 等表格视图（keys=None 时清空）。
+ui\dialogs\analysis\advanced.py:457: 极端风分析：Periodic Maxima / Independent Storms / EWTS II 三算法。
+ui\dialogs\analysis\advanced.py:531: 当前速度序列（Gusts 模式取关联 max 通道），已按标记过滤。
+ui\dialogs\analysis\advanced.py:550: Set Recommended：使风暴数 ≈ 每年 20 场的阈值（手册 11.13.2）。
+ui\dialogs\analysis\basic.py:1: basic.py：见 _common 与 shim。
+ui\dialogs\analysis\energy.py:1: energy.py：见 _common 与 shim。
+ui\dialogs\analysis\energy.py:32: 风机发电量：功率曲线 + 密度修正 + 轮毂高度外推 + AEP/NCF。
+ui\dialogs\analysis\energy.py:132: 读取可编辑功率曲线表 → (curve_u, curve_p)。
+ui\dialogs\analysis\energy.py:148: 按当前额定功率填充示例曲线（IEC 风格：3 m/s 切入、15 m/s 满发）。
+ui\dialogs\analysis_dialogs.py:1: 兼容 shim：实现已拆分至 ui/dialogs/analysis/（S2），导入路径保持不变。
+ui\dialogs\calibration.py:1: Calibration 校准窗口（对齐 Windographer 原版布局）。
+
+上方时间轴显示各通道的校准段，下方左侧为 Selected time / St
+ui\dialogs\calibration.py:27: 校准时间轴：一行为一个通道，分段显示校准区间。
+ui\dialogs\calibration.py:172: 校准主对话框（全英文标签，对齐原版布局）。
+ui\dialogs\compare_dialogs.py:1: Compare 菜单对话框：Compare Data Sets + Measure Correlate Predict (MCP)。
+
+按 Windograph
+ui\dialogs\compare_dialogs.py:61: MCP 时间步下拉文本 → pandas 重采样频率别名。
+ui\dialogs\compare_dialogs.py:77: pandas 频率别名 → 小时数。
+ui\dialogs\compare_dialogs.py:89: 安全 Pearson 相关（有限值、剔常值）。
+ui\dialogs\compare_dialogs.py:98: 逐小时平均日变化。
+ui\dialogs\compare_dialogs.py:105: 逐月平均。
+ui\dialogs\compare_dialogs.py:113: 返回 (sector_centers, frequencies_by_bin)。
+ui\dialogs\compare_dialogs.py:158: 带全选复选框的多选列表。
+ui\dialogs\compare_dialogs.py:200: 多数据集对比：Display 类型切换 + Settings + 多图展示。
+ui\dialogs\compare_dialogs.py:317: 确保右侧有 n 个 PlotCanvas。
+ui\dialogs\compare_dialogs.py:354: 返回 [(显示名, series), ...]，受传感器设置影响。
+ui\dialogs\compare_dialogs.py:477: Import Data Tab：按 Windographer 截图布局重构。
+
+    结构：
+    - 顶部三栏：Target data set / Ref
+ui\dialogs\compare_dialogs.py:850:  小时
+（该偏移下相关系数 
+ui\dialogs\compare_dialogs.py:850:  小时
+（该偏移下相关系数 
+ui\dialogs\compare_dialogs.py:850: 最优时间偏移约 
+ui\dialogs\compare_dialogs.py:850: 最优时间偏移约 
+ui\dialogs\compare_dialogs.py:854: 在下拉项（0h + 1..24 ahead + 1..24 back）中定位最接近项。
+ui\dialogs\compare_dialogs.py:866: Compare Sites Tab：多图对比展示。
+ui\dialogs\compare_dialogs.py:918: Correlate Speeds Tab：算法选择与回归参数 + 真实计算。
+ui\dialogs\compare_dialogs.py:951: 由 MCP 主对话框注入并发目标/参考风速。
+ui\dialogs\compare_dialogs.py:957: 用户勾选的算法列表（简称）。
+ui\dialogs\compare_dialogs.py:969: 运行选中的算法，更新回归参数表。
+ui\dialogs\compare_dialogs.py:983: 更新回归参数表（每行一个算法）。
+ui\dialogs\compare_dialogs.py:1126: Correlate Directions Tab：风向相关性。
+ui\dialogs\compare_dialogs.py:1190: Synthesize Data Tab：生成最终数据集。
+ui\dialogs\compare_dialogs.py:1260: MCP 主对话框：5 个 Tab。
+ui\dialogs\configure_dataset.py:1: Configure Data Set 对话框（两 Tab）。
+
+- Data Columns：编辑每个通道的类别/标签/单位/颜色/高度/可见性/关联列，
+  
+ui\dialogs\configure_dataset.py:62: 其它
+ui\dialogs\configure_dataset.py:70: 从名称中提取方位（空格/下划线风格均可）：
+    `Speed 160m W Avg` / `Ch1_Anem_160.00m_W_Avg` → W。
+ui\dialogs\configure_dataset.py:80: 去掉末尾的单字母后缀（前面是统计词时才认定）：
+    `SPEED 120m AVG A` → `SPEED 120m AVG`。
+ui\dialogs\configure_dataset.py:90: 传感器身份 = 原始列名去掉统计词/单位词后的主干（下划线/空格通用）。
+
+    同一支传感器的 Avg/SD/Min/Max 行归为同一键；不同传感器（Ch
+ui\dialogs\configure_dataset.py:106: 把可能为 None/空/NaN 的值安全转成 float。
+
+    QDoubleSpinBox.setValue(float('nan')) 在不同 Qt 
+ui\dialogs\configure_dataset.py:124: 添加计算列：支持 11 种计算类型（对齐 Windographer 17.11-17.18）。
+ui\dialogs\configure_dataset.py:269: Configure Data Set 主对话框。
+ui\dialogs\configure_dataset.py:647: 监听表格 viewport resize，窗口/分割器变化时重新均分列宽。
+ui\dialogs\configure_dataset.py:654: 先让每列完整显示内容，再把多余空间均分给所有列。
+ui\dialogs\configure_dataset.py:776: 仅 Avg 通道显示 Std. dev./Max./Min. 关联下拉。
+ui\dialogs\configure_dataset.py:834: 后缀下拉：把所选通道的标准化标签追加/替换末尾字母
+        （`SPEED 120m AVG` + A → `SPEED 120m AVG A`）；选（
+ui\dialogs\configure_dataset.py:850: 按规则重算标准化名：`SPEED 120m W AVG`（类型全大写完整单词 +
+        高度 + 方位 + 统计）；同类型同高度多支传感器按原始列名主
+ui\dialogs\configure_dataset.py:980: 月
+ui\dialogs\configure_dataset.py:980: 月
+ui\dialogs\configure_dataset.py:1048: 保存通道模板
+ui\dialogs\configure_dataset.py:1049: JSON (*.json);;所有文件 (*.*)
+ui\dialogs\configure_dataset.py:1068: 加载通道模板
+ui\dialogs\configure_dataset.py:1069: JSON (*.json);;所有文件 (*.*)
+ui\dialogs\configure_dataset.py:1090: 自动关联开关状态变化。
+ui\dialogs\configure_dataset.py:1105: 为每个 Avg 通道自动匹配同类型、同高度、同方位的 SD/Max/Min。
+ui\dialogs\export\__init__.py:1: Export Data 对话框的 10 种格式选项卡（B3 拆分）。
+ui\dialogs\export\_common.py:1: "各格式选项卡共享的工具函数与公共选项基类（B3 拆分聚集）。
+ui\dialogs\export\_common.py:61: 按标记、时间区间、列有效性筛选行。
+ui\dialogs\export\_common.py:103: 月均均值 (Mean of Monthly Means)。
+ui\dialogs\export\_common.py:110: 为 Openwind 单高度导出寻找同高度的温度/密度/TI 列（如没有则回退到任意列）。
+ui\dialogs\export\_common.py:151: 包含 Include、Export 区间、Preview settings 三个紧凑小组。
+ui\dialogs\export\epe.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\epe.py:124: 导出 EPE
+ui\dialogs\export\meteodyn.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\meteodyn.py:131: 导出 Meteodyn WT
+ui\dialogs\export\mgm.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\mgm.py:111: 导出 MGM
+ui\dialogs\export\openwind.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\openwind.py:190: 返回 (speed_col, dir_col, temp_col, dens_col, ti_col)。
+ui\dialogs\export\openwind.py:323: 导出 Openwind
+ui\dialogs\export\sam.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\sam.py:123: 导出 SAM
+ui\dialogs\export\time_series.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\time_series.py:312: 导出 Time Series
+ui\dialogs\export\wasp.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\wasp.py:159: 返回 (H_counts, speed_edges, dir_mids, speed_series_aligned)。
+ui\dialogs\export\wasp.py:302: 导出 WAsP .tab
+ui\dialogs\export\windfarmer.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\windfarmer.py:192: 导出 WindFarmer
+ui\dialogs\export\windsim.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\windsim.py:242: 导出 WindSim
+ui\dialogs\export\xml_meta.py:1: Export Data 格式选项卡（拆分自 export_dialog，B3）。
+ui\dialogs\export\xml_meta.py:88: 导出 XML Metadata
+ui\dialogs\export_dialog.py:1: Export Data 对话框：支持多种风资源软件格式导出。
+
+布局参考 Windographer 4.0.28 Export Data 对话框：紧凑三栏，底部
+ui\dialogs\export_dialog.py:44: 导出数据主对话框。
+ui\dialogs\flag_dialogs.py:1: Flags 菜单 8 个核心对话框（WindAnaly）。
+
+按 Windographer 风格实现：
+1) Manual Flag：时间区间 + 通道勾选 +
+ui\dialogs\flag_dialogs.py:71: 带「全选」复选框的多选列表。
+ui\dialogs\flag_dialogs.py:112: 标签 + QDateTimeEdit 组合。
+ui\dialogs\flag_dialogs.py:134: 颜色块显示。
+ui\dialogs\flag_dialogs.py:144: 含 Flag 选择 + Apply/Remove/Remove All 按钮的公共底部区。
+ui\dialogs\flag_dialogs.py:180: Table Settings：选择表格可见列（按类型 / 按名称）、着色与标签截断。
+ui\dialogs\flag_dialogs.py:311: Flag Manually：原版三区布局。
+
+    左：时间区间 + 数据列勾选 + 更新选项 + 标记下拉 + 三个 Segment 按钮；
+    中：时
+ui\dialogs\flag_dialogs.py:530: All wind speed / direction columns：只勾选该类型的平均值（Avg）列。
+ui\dialogs\flag_dialogs.py:734: 散点图标记：X/Y 选择 + 散点 + 选择计数 + 应用标记。
+ui\dialogs\flag_dialogs.py:855: 规则定义。
+ui\dialogs\flag_dialogs.py:864: 按规则标记：规则表 + 可勾选 + Test/Execute。
+ui\dialogs\flag_dialogs.py:1042: 塔影标记：风速仪对 + 扇区 + 中位数比/散点比双图。
+ui\dialogs\flag_dialogs.py:1213: 检查并移除标记：筛选 + 通道 + 时序/统计 + 取消标记。
+ui\dialogs\flag_dialogs.py:1337: 定义标记类型。
+ui\dialogs\flag_dialogs.py:1442: 定义常用标记（界面与 Define Flags 一致，但 favorite=True）。
+ui\dialogs\flag_dialogs.py:1451: 查看常用标记规则表。
+ui\dialogs\language_settings.py:1: 语言设置对话框。
+
+英文为底座，提供三列：英文底座 / 英文修正 / 中文翻译。
+展示英文菜单时，优先使用英文修正列（若已填写）；软件完成后，
+英文修正列将替换
+ui\dialogs\language_settings.py:20: 切换界面语言，并维护英文底座 → 英文修正 / 中文翻译 的对照表。
+ui\dialogs\revise\__init__.py:1: Revise 菜单 7 个对话框（每对话框一文件，S2 拆分）。
+ui\dialogs\revise\_common.py:1: 本包各对话框共享的助手与基类（S2 拆分聚集）。
+ui\dialogs\revise\_common.py:68: 带「全选」复选框 + 多选列表的可复用组件。
+ui\dialogs\revise\_common.py:117: 标签 + 日期 + 时间的组合行。
+ui\dialogs\revise\_common.py:145: 在布局底部添加 Help + Cancel + OK。
+ui\dialogs\revise\apply_scale_offset.py:1: apply_scale_offset.py：见 _common 与 shim。
+ui\dialogs\revise\apply_scale_offset.py:43: 选择要修改的数据列
+ui\dialogs\revise\apply_scale_offset.py:140:  个通道应用 Offset=
+ui\dialogs\revise\apply_scale_offset.py:140:  个通道应用 Offset=
+ui\dialogs\revise\apply_scale_offset.py:140: 已对 
+ui\dialogs\revise\apply_scale_offset.py:140: 已对 
+ui\dialogs\revise\apply_time_shift.py:1: apply_time_shift.py：见 _common 与 shim。
+ui\dialogs\revise\combine_sensors.py:1: combine_sensors.py：见 _common 与 shim。
+ui\dialogs\revise\combine_sensors.py:137: 已组合 
+ui\dialogs\revise\combine_sensors.py:137: 已组合 
+ui\dialogs\revise\delete_data.py:1: delete_data.py：见 _common 与 shim。
+ui\dialogs\revise\delete_data.py:42: 选择数据列：
+ui\dialogs\revise\delete_data.py:161:  个通道
+ui\dialogs\revise\delete_data.py:161:  个通道
+ui\dialogs\revise\delete_data.py:161: 已删除 
+ui\dialogs\revise\delete_data.py:161: 已删除 
+ui\dialogs\revise\delete_data.py:198:  个时间点
+ui\dialogs\revise\delete_data.py:198:  个时间点
+ui\dialogs\revise\delete_data.py:198:  个通道删除 
+ui\dialogs\revise\delete_data.py:198:  个通道删除 
+ui\dialogs\revise\delete_data.py:198: 已从 
+ui\dialogs\revise\delete_data.py:198: 已从 
+ui\dialogs\revise\fill_gaps.py:1: fill_gaps.py：见 _common 与 shim。
+ui\dialogs\revise\fill_gaps.py:28: 原版风格的数据覆盖时间线：每通道一行色带，缺测处留白形成白色竖线。
+
+    set_data 一次性把每通道时间轴降采样为固定桶数（时间比例位置），
+    
+ui\dialogs\revise\fill_gaps.py:46: 每通道一次向量化降采样：桶 = 时间比例分格，值 = 有效率。
+ui\dialogs\revise\fill_gaps.py:393: 用同类其它高度通道重建，synth=True 时再线性填补剩余缺测。
+ui\dialogs\revise\fix_quantization.py:1: fix_quantization.py：见 _common 与 shim。
+ui\dialogs\revise\fix_quantization.py:208: 返回 (edges, density%)：密度 = 占比% / 单位宽度，同原版
+        Frequency Density (%/m/s) 轴。
+ui\dialogs\revise\fix_quantization.py:241: 年
+ui\dialogs\revise\fix_quantization.py:241: 年
+ui\dialogs\revise\fix_quantization.py:241: 月
+ui\dialogs\revise\fix_quantization.py:241: 月
+ui\dialogs\revise\vertical_extrapolation.py:1: vertical_extrapolation.py：见 _common 与 shim。
+ui\dialogs\revise\vertical_extrapolation.py:28: Vertical Extrapolation：原版布局。
+
+    左（共享）：Synthesize 复选 + 目标高度表（20 行）+ Flag new co
+ui\dialogs\revise\vertical_extrapolation.py:266: cols=2 → 标签列+单指数列；cols>2 → 标签列+多列。
+ui\dialogs\revise\vertical_extrapolation.py:299: Direction Tab：风向切变率（Wind veer rate，°/100m），6 种模式。
+ui\dialogs\revise\vertical_extrapolation.py:433: 每个时间步的风向切变率（°/100m）。
+
+        以最低层方向为基准，把各层方向按圆周差展开后对高度做线性拟合，
+        斜率 ×100。
+ui\dialogs\revise\vertical_extrapolation.py:479: 按数据预填切变率表（每桶中位数）；只填空白格。
+ui\dialogs\revise\vertical_extrapolation.py:511: 找参考风向通道的同高度 SD 列（关联优先，同高度匹配兜底）。
+ui\dialogs\revise\vertical_extrapolation.py:525: 按当前切变率模式为每个时间步生成 veer（°/100m）。
+ui\dialogs\revise\vertical_extrapolation.py:560: Temperature Tab：温度梯度（Temperature gradient，°C/100m），8 模式。
+ui\dialogs\revise\vertical_extrapolation.py:685: 每个时间步的温度梯度（°C/100m）：T 对 z 线性拟合 ×100。
+ui\dialogs\revise\vertical_extrapolation.py:782: 按参考高度的风速比值缩放参考 SD 列，自动生成 zt 高度 SD 列。
+ui\dialogs\revise\vertical_extrapolation.py:842: 每个时间步的幂律指数（对勾选源做 ln v ~ ln z 拟合，向量化）。
+ui\dialogs\revise\vertical_extrapolation.py:881: 扇区数变化：重建扇区表行标签，空白格按数据预填。
+ui\dialogs\revise\vertical_extrapolation.py:892: 按数据预填各指数表（每桶中位数 alpha）；只填空白格。
+ui\dialogs\revise\vertical_extrapolation.py:945: 按当前模式为每个时间步生成 alpha 数组。
+ui\dialogs\revise\vertical_extrapolation.py:1141: 填充第 1 列指数；空白格才填（保留用户编辑），NaN 跳过。
+ui\dialogs\revise_dialogs.py:1: 兼容 shim：实现已拆分至 ui/dialogs/revise/（S2），导入路径保持不变。
+ui\dialogs\rose_properties.py:1: 风玫瑰图属性对话框（Windographer 风格）。
+
+Tabs: Axes / Channels / Fonts
+
+ui\dialogs\rose_properties.py:24: 实线
+ui\dialogs\rose_properties.py:25: 虚线
+ui\dialogs\rose_properties.py:26: 点线
+ui\dialogs\rose_properties.py:27: 点划线
+ui\dialogs\rose_properties.py:31: 无
+ui\dialogs\rose_properties.py:32: 圆
+ui\dialogs\rose_properties.py:33: 方
+ui\dialogs\rose_properties.py:34: 菱形
+ui\dialogs\rose_properties.py:35: 三角
+ui\dialogs\rose_properties.py:41: 填充+线
+ui\dialogs\rose_properties.py:42: 仅填充
+ui\dialogs\rose_properties.py:43: 仅线
+ui\dialogs\rose_properties.py:44: 柱状
+ui\dialogs\rose_properties.py:228: 风向玫瑰图
+ui\dialogs\rose_properties.py:315: 选择颜色
+ui\dialogs\rose_properties.py:326: 风向玫瑰图
+ui\dialogs\tools_dialogs.py:1: Tools 菜单对话框：风资源工程师常用独立计算工具。
+
+按 Windographer 风格实现 UI 骨架与基础计算，复杂算法后续按真机反馈精调。
+
+ui\dialogs\tools_dialogs.py:34: 加载机型库 JSON（随包分发的只读资源）。
+ui\dialogs\tools_dialogs.py:45: ISA：返回 (temperature_C, pressure_hPa, density_kg_m3)。
+ui\dialogs\tools_dialogs.py:55: 干空气密度 kg/m3。
+ui\dialogs\tools_dialogs.py:60: 饱和湿空气密度（简化 Magnus 公式）。
+ui\dialogs\tools_dialogs.py:72: 对数律：z0 为粗糙长度(m)。
+ui\dialogs\tools_dialogs.py:79: 幂律拟合，返回 (alpha, r2) 或 (None,None)。
+ui\dialogs\tools_dialogs.py:97: 对数律拟合粗糙长度 z0，返回 (z0, r2)。
+ui\dialogs\tools_dialogs.py:126: Gumbel 拟合，返回 (u, alpha, v50)。
+ui\dialogs\tools_dialogs.py:151: Tools 对话框统一基类：标题图标化、底部 Help / Close 按钮。
+ui\dialogs\tools_dialogs.py:180: 可编辑数值表，返回 (col0_values, col1_values, ...)。
+ui\dialogs\tools_dialogs.py:1003: 返回 (speeds, powers)。
+ui\fallback_bar.py:1: Fallback 顶部菜单栏/工具栏实现。
+
+当 PySide6 的 QMenuBar/QToolBar 在 Windows 某些环境下无法作为普通子 widg
+ui\fallback_bar.py:18: 纯 QWidget 实现的菜单栏，使用 QToolButton（InstantPopup）。
+ui\fallback_bar.py:51: 去掉菜单按钮上的助记符，保持简洁。
+ui\fallback_bar.py:57: 添加一个顶级菜单按钮，点击即弹出菜单。
+ui\fallback_bar.py:74: 更新菜单按钮文案（语言切换用）。
+ui\fallback_bar.py:87: 在末尾添加弹性占位。
+ui\fallback_bar.py:91: 清空所有按钮（不会删除 QMenu 对象）。
+ui\fallback_bar.py:102: 返回已注册的全部 QMenu。
+ui\fallback_bar.py:106: 返回所有 QMenu 的 menuAction（兼容旧检查）。
+ui\fallback_bar.py:116: 纯 QWidget 实现的快捷工具栏（文字按钮，宽度不足时自动换行）。
+
+    按钮数量超出可用宽度时自动折行，并按行数调整自身高度，
+    通过 heig
+ui\fallback_bar.py:156: 去掉助记符和省略号，让工具栏按钮更紧凑。
+ui\fallback_bar.py:166: 为 QAction 创建一个按钮并加入工具栏。
+
+        text 覆盖按钮/悬停文案（默认用 action.text() 的净化版本）；
+      
+ui\fallback_bar.py:201: 添加竖向分隔线。
+ui\fallback_bar.py:210: 贪心换行：按可用宽度把按钮铺到多行，并同步自身高度。
+
+        注意：已在布局中的 widget 直接 addWidget 到新坐标即为"移动"，
+  
+ui\fallback_bar.py:244: 清空工具栏按钮。
+ui\fallback_bar.py:255: 返回当前按钮关联的 QAction。
+ui\fallback_bar.py:259: 按 QAction 当前 text 刷新按钮文案（固定文案与图标按钮除外）。
+ui\modules\analysis_tabs.py:1: 兼容 shim：实现已拆分至 ui/modules/tabs/（S2），导入路径保持不变。
+ui\modules\diurnal_widget.py:1: 日变化廓线控件：左侧 Windographer 风格控制面板 + 折线图/表格切换。
+
+对齐原版 Diurnal Profile 标签页：
+- Data col
+ui\modules\diurnal_widget.py:48: 日变化廓线控件：左侧控制面板 + 右侧图/表 + 最右图例面板。
+ui\modules\diurnal_widget.py:472: 找风速 Avg 通道配对的 SD 通道（注册关联优先，命名约定兜底）。
+ui\modules\diurnal_widget.py:482: 派生计算列名：有 SD 配对的风速 Avg → `... TI`；全部风速 Avg → `... WPD`。
+
+        与原版一致：先列全部 TI，再列
+ui\modules\diurnal_widget.py:586: Min/Max 限值框单位后缀（随 Data column 过滤列的通道单位）。
+ui\modules\diurnal_widget.py:858: 按所选通道类型给 y 轴命名（全部同类型时用具体名称）。
+ui\modules\docx_writer.py:1: 极简 DOCX 生成器（零依赖：zipfile + 手写 Office Open XML）。
+
+支持：标题 / 段落 / 表格 / PNG 图片。满足 Repo
+ui\modules\docx_writer.py:74: 增量构建 DOCX：标题 / 段落 / 表格 / PNG 图片。
+ui\modules\histogram_widget.py:1: 频率分布控件：左侧 Windographer 风格控制面板 + 直方图/表格切换。
+
+对齐原版 Histogram 标签页：
+- Display：frequen
+ui\modules\histogram_widget.py:53: 频率分布控件：左侧控制面板 + 右侧图/表。
+ui\modules\histogram_widget.py:511: 找风速 Avg 通道配对的 SD 通道（注册关联优先，命名约定兜底）。
+ui\modules\histogram_widget.py:521: 派生计算列名（与 Diurnal 一致：先全部 TI，再全部 WPD）。
+ui\modules\histogram_widget.py:535: Primary bins 下拉：全部通道 + TI/WPD 计算列（对齐原版截图）。
+ui\modules\histogram_widget.py:615: Width/Start at 的单位标签随 Primary bins 列的通道单位。
+ui\modules\plot\__init__.py:1: PlotCanvas 自绘绘图引擎（B4 拆分：门面 + 绘制/交互/导出 Mixin）。
+ui\modules\plot\_common.py:1: 绘图引擎共享常量与工具（调色板/色带/时间轴/LOD 抽稀）。
+ui\modules\plot\_common.py:3: PlotCanvas：QPainter 自绘图表控件（零新增依赖）。
+
+支持：plot_line / plot_bar / plot_scatter / plo
+ui\modules\plot\_common.py:60: 将 datetime64 / datetime / Timestamp 的 x 轴统一转为 ordinal 数值。
+
+    返回 (x_numeric, au
+ui\modules\plot\_common.py:99: 按像素列做 min/max 包络抽稀（LOD），保证视觉峰值不丢失。
+
+    x 需为升序且已剔除 NaN；每列输出 (x, ymin) 与 (x, ymax
+ui\modules\plot\_common.py:132: 回溯到 ndarray 的根底数组，用于 LOD 缓存的稳定身份标识。
+ui\modules\plot\canvas.py:1: PlotCanvas 门面：状态、公共 API 与绘制分发（B4 拆分）。
+ui\modules\plot\canvas.py:3: PlotCanvas：QPainter 自绘图表控件（零新增依赖）。
+
+支持：plot_line / plot_bar / plot_scatter / plo
+ui\modules\plot\canvas.py:40: 自绘图表控件。
+ui\modules\plot\canvas.py:93: 临时设置导出时的显示开关；调用 reset_export_flags() 恢复。
+ui\modules\plot\canvas.py:103: 恢复默认导出显示开关。
+ui\modules\plot\canvas.py:126: 按系列标签固定颜色（用于原版配色场景，如蓝=原始/棕黄=修改后）。
+ui\modules\plot\canvas.py:132: 选中数据段高亮带（数据坐标，随 x 轴类型）；None 清除。
+        用于 Flag Manually 的选段高亮。
+ui\modules\plot\canvas.py:145: 绘制单条折线。x 可 datetime/numeric；ymin 强制 y 轴下界。
+        smooth=True 时使用样条曲线连接点（用于风切变廓
+ui\modules\plot\canvas.py:176: 绘制多条折线。series=[(label, x_arr, y_arr, marker?)， ...]；
+        marker 可选 'o'/'d'/'
+ui\modules\plot\canvas.py:243: 数值边界直方图（Histogram 标签页）。
+
+        edges : (n+1,) 分箱边界；counts : (n,) 每箱高度（频次或频率%）
+
+ui\modules\plot\canvas.py:276: 绘制散点图。
+
+        point_colors : 与 x/y 等长的颜色串列表（Color code by 功能）；
+        colorba
+ui\modules\plot\canvas.py:322: 绘制风玫瑰。
+
+        Parameters
+        ----------
+        sectors : 扇区数
+        freq
+ui\modules\plot\canvas.py:378: 绘制热力图（数据覆盖 / DMap）。
+
+        matrix 形状 (n_rows, n_cols)，NaN 视为缺测（灰底）；
+        xl
+ui\modules\plot\canvas.py:393: 绘制箱线图。
+
+        groups = [(标签, {'min','q1','med','q3','max','mean','n'}), ...]
+ui\modules\plot\canvas.py:405: 在控件右下角叠加一个微型工具栏。
+ui\modules\plot\cartesian.py:1: 绘图引擎拆分模块（B4，装饰器感知重建）。
+ui\modules\plot\cartesian.py:3: PlotCanvas：QPainter 自绘图表控件（零新增依赖）。
+
+支持：plot_line / plot_bar / plot_scatter / plo
+ui\modules\plot\cartesian.py:47: 返回当前绘图区边距 (left, right, top, bottom)。
+ui\modules\plot\cartesian.py:85: 记录数据全范围，用于限制缩放/平移不越界。
+ui\modules\plot\cartesian.py:91: X 轴边界用数据真实起止（不再外扩 5%），
+        保证「复位 / 缩到最小」时两端不出现空白。
+ui\modules\plot\cartesian.py:101: 按当前视图裁剪 + 像素列抽稀，带缓存。返回 (x, y)。
+ui\modules\plot\cartesian.py:122: 当前图形要显示的图例条目；无条目时绘图区不预留右侧空间。
+ui\modules\plot\cartesian.py:223: 月
+ui\modules\plot\cartesian.py:223: 月
+ui\modules\plot\cartesian.py:254: 按数量级选择简洁刻度格式，避免小数值的科学计数法。
+ui\modules\plot\cartesian.py:407: 用三次贝塞尔构造平滑曲线，控制点沿相邻点切线方向。
+ui\modules\plot\cartesian.py:426: 在 pt 处绘制数据标记：'o' 圆 / 'd' 菱形 / 's' 方块。
+ui\modules\plot\cartesian.py:442: 在绘图区右侧外部纵向绘制图例（无背景框），对齐原版样式。
+
+        - 位置：绘图区右边框之外，顶端与绘图区顶端齐平，纵向单列；
+        - 字
+ui\modules\plot\cartesian.py:515: 数值边界直方图 + 可选叠加曲线 + 图下方图例。
+ui\modules\plot\cartesian.py:798: 按色带名在 [0,1] 上取色（线性插值）。
+ui\modules\plot\cartesian.py:817: 只画 Y 轴刻度/网格/外框（X 轴为类别轴，由调用方自绘标签）。
+ui\modules\plot\cartesian.py:842: 在绘图区右侧绘制竖向色标。
+ui\modules\plot\cartesian.py:1020: 生成 nice 的坐标范围与 tick 间隔；hard_min 强制下界不低于该值。
+ui\modules\plot\export_image.py:1: PlotCanvas：QPainter 自绘图表控件（零新增依赖）。
+from __future__ import annotations
+
+支持：plot_l
+ui\modules\plot\export_image.py:33: 导出图片：对齐原版布局，支持 PNG / 剪贴板，含尺寸、字体、线宽、预览。
+ui\modules\plot\exporting.py:1: 绘图引擎拆分模块（B4，装饰器感知重建）。
+ui\modules\plot\exporting.py:3: PlotCanvas：QPainter 自绘图表控件（零新增依赖）。
+
+支持：plot_line / plot_bar / plot_scatter / plo
+ui\modules\plot\exporting.py:36: 将当前图表渲染为位图并复制到剪贴板。
+ui\modules\plot\exporting.py:46: 导出图片对话框。
+ui\modules\plot\exporting.py:51: 导出图表底层数据，默认 .txt，文件头为英文规范名（对齐原版）。
+ui\modules\plot\exporting.py:76: 打开图表属性对话框。
+
+        若外部（如 WindRoseWidget）设置了 properties_handler，优先调用，
+        否则
+ui\modules\plot\exporting.py:88: 把当前图表数据转换为 DataFrame，供导出。
+ui\modules\plot\polar.py:1: 绘图引擎拆分模块（B4，装饰器感知重建）。
+ui\modules\plot\polar.py:3: PlotCanvas：QPainter 自绘图表控件（零新增依赖）。
+
+支持：plot_line / plot_bar / plot_scatter / plo
+ui\modules\plot\polar.py:232: scatter_plot：极坐标散点（direction vs value）。
+ui\modules\plot\properties.py:1: PlotCanvas：QPainter 自绘图表控件（零新增依赖）。
+from __future__ import annotations
+
+支持：plot_l
+ui\modules\plot\properties.py:33: 图表属性：Axes / Channels / Fonts 三页。
+ui\modules\plot\view.py:1: 绘图引擎拆分模块（B4，装饰器感知重建）。
+ui\modules\plot\view.py:3: PlotCanvas：QPainter 自绘图表控件（零新增依赖）。
+
+支持：plot_line / plot_bar / plot_scatter / plo
+ui\modules\plot\view.py:36: 返回当前 effective 范围（若未缩放则返回数据全范围）。
+ui\modules\plot\view.py:44: 将绘图区像素坐标转换为数据坐标。
+ui\modules\plot\view.py:52: 将数据坐标转换为绘图区像素坐标。
+ui\modules\plot\view.py:72: 返回当前 x 轴视图范围（数据坐标）。
+ui\modules\plot\view.py:76: 返回 x 轴数据全范围。
+ui\modules\plot\view.py:80: 仅设置 x 轴范围，y 轴保持当前。
+ui\modules\plot\view.py:99: 以像素点 (px,py) 为中心缩放 factor 倍（factor>1 放大）。
+ui\modules\plot\view.py:120: 把 [lo,hi] 平移式钳进 [b_lo,b_hi]，保持窗口跨度不被压缩。
+ui\modules\plot\view.py:132: 设置视图范围，并限制在数据边界内（贴边时整体平移，跨度不变）。
+ui\modules\report_builder.py:1: Reports 标签页的报告内容构建（HTML 预览 / PDF / DOCX 共用数据模型）。
+
+ReportModel 从 Dataset 提取统计，输出统
+ui\modules\report_builder.py:22: 从 Dataset 收集报告内容块。
+ui\modules\report_builder.py:186: 内容块 → HTML（PDF/预览用；图片以文件路径引用）。
+ui\modules\scatter_widget.py:1: 散点图控件：左侧 Windographer 风格控制面板 + 散点图。
+
+对齐原版 Scatter Plot 标签页：
+- Plot（y 轴）/ versus（
+ui\modules\scatter_widget.py:42: Plot/versus 交换按钮（上下双箭头样式）。
+ui\modules\scatter_widget.py:61: 散点图控件：左侧控制面板 + 右侧散点图。
+ui\modules\scatter_widget.py:428: 找风速 Avg 通道配对的 SD 通道（注册关联优先，命名约定兜底）。
+ui\modules\scatter_widget.py:438: 派生计算列名（与 Diurnal/Histogram 一致：先 TI 后 WPD）。
+ui\modules\scatter_widget.py:694: TI/WPD 计算列 → (extra 项, None)；实列 → (None, col)。
+ui\modules\scatter_widget.py:805: 数据列分档着色：0/缺测 → 黑色，其余按量程 10 等分 jet 色带。
+
+        返回 (逐点颜色数组, 色带图例 [(label, color),
+ui\modules\tables_widget.py:1: Tables 控件：左侧 Windographer 风格设置面板 + 右侧统计表格。
+
+对齐原版 Tables 标签页：
+- Table 下拉：Data Set
+ui\modules\tables_widget.py:90: Tables 控件：左设置面板 + 右统计表格。
+ui\modules\tables_widget.py:364: Settings/Bin settings 小节标题：粗体 + 下划分隔线（原版样式）。
+ui\modules\tables_widget.py:761: TI/WPD 计算列 → Series；实列 → None。
+ui\modules\tables_widget.py:782: 把需要的 TI/WPD 计算列物化进一个工作副本。
+ui\modules\tabs\__init__.py:1: 8 个分析 Tab 的实现（基类 + 每组一文件，S2 拆分）。
+ui\modules\tabs\_common.py:1: 各 Tab 共享的助手、常量与 AnalysisTab 基类（S2 拆分聚集）。
+ui\modules\tabs\_common.py:33: DatetimeIndex → 带小数的 ordinal（秒级分辨率），全向量化。
+
+    旧实现用 ``index.map(pd.Timestamp.too
+ui\modules\tabs\_common.py:48: 气压
+ui\modules\tabs\_common.py:48: 气温
+ui\modules\tabs\_common.py:48: 风向
+ui\modules\tabs\_common.py:48: 风速
+ui\modules\tabs\_common.py:49: 其它
+ui\modules\tabs\_common.py:49: 相对湿度
+ui\modules\tabs\_common.py:52: 均值
+ui\modules\tabs\_common.py:52: 最大
+ui\modules\tabs\_common.py:52: 最小
+ui\modules\tabs\_common.py:52: 标准差
+ui\modules\tabs\_common.py:52: 阵风
+ui\modules\tabs\_common.py:55: 东北
+ui\modules\tabs\_common.py:55: 东南
+ui\modules\tabs\_common.py:55: 西北
+ui\modules\tabs\_common.py:55: 西南
+ui\modules\tabs\_common.py:56: 东
+ui\modules\tabs\_common.py:56: 北
+ui\modules\tabs\_common.py:56: 南
+ui\modules\tabs\_common.py:56: 西
+ui\modules\tabs\_common.py:61: 通道/列名保持英文规范名，不转中文，便于外部软件识别。
+ui\modules\tabs\_common.py:66: 与 display_name 对偶；现 display 已为规范名，直接返回。
+ui\modules\tabs\_common.py:71: 分析 Tab 基类：提供统一的项目注入和常用控件创建方法。
+ui\modules\tabs\_common.py:85: 子类实现：project 数据或选择变化时重绘。
+ui\modules\tabs\_common.py:111: 根据「标记/未标记」勾选返回保留行掩码；无标记或全选时返回 None。
+
+        约定：cb_unflagged（未标记数据）默认勾选 → 默认显示未剔
+ui\modules\tabs\_common.py:144: 创建一组 QCheckBox；界面显示中文，内部保留规范名。
+ui\modules\tabs\reports.py:1: 分析 Tab 实现（拆分自 analysis_tabs，S2）。
+ui\modules\tabs\reports.py:34: Reports：风资源分析报告（对齐原版：Report combo + Create Report + Sections + Filter by）。
+ui\modules\tabs\reports.py:195: 填充筛选下拉框（年份/月份/传感器/数据列）。
+ui\modules\tabs\simple.py:1: 分析 Tab 实现（拆分自 analysis_tabs，S2）。
+ui\modules\tabs\simple.py:34: 独立风玫瑰 Tab：完整控制栏（Display/Versus/Sectors/Data/Format/属性）。
+ui\modules\tabs\simple.py:56: 独立日变化廓线 Tab：完整控制面板（Data column/Display/Format/Filter by）。
+ui\modules\tabs\simple.py:77: 独立频率分布 Tab：Display/Versus/Primary bins/Filter by 完整控制面板。
+ui\modules\tabs\simple.py:98: 独立散点图 Tab：Plot/versus/Color code by/Filter by/Results 完整面板。
+ui\modules\tabs\simple.py:119: 独立统计表格 Tab：25 种表型 + Settings/Filter by + Export Table。
+ui\modules\tabs\summary.py:1: 分析 Tab 实现（拆分自 analysis_tabs，S2）。
+ui\modules\tabs\summary.py:96: 左侧面板与右侧图表之间的额外间隙。
+
+        用户反馈：左边最长行（起始/结束日期）与右边 y 轴标签“离地高度”
+        在垂直方向上完全错位
+ui\modules\tabs\summary.py:105: 安排一次左面板自适应。
+
+        网格刚填完时 sizeHint 还没反映最终内容，必须等布局稳定后再量测，
+        否则会把宽度算小、右侧仍然
+ui\modules\tabs\summary.py:122: 左栏最长一行的文字右边缘（相对左栏左边界），作为间隙的度量基准。
+
+        不能拿 widget.sizeHint().width() 当基准：它含左右
+ui\modules\tabs\summary.py:141: 左侧面板按内容自适应：最长行右边缘到右侧图表只留 splitter handle。
+
+        用户反馈：左边最长行（日期）与右边 y 轴标签“离地高度”
+ui\modules\tabs\summary.py:249: 绘制所有 Avg 风速通道的月/日变化曲线，用于汇总页图例展示。
+ui\modules\tabs\summary.py:276: 创建扁平化信息区块：无背景/无边框，标题加粗。
+
+        标题 QLabel 存入 self._section_labels，refresh 时按当前语
+ui\modules\tabs\summary.py:304: 清空并填充键值网格；键 90px，值自动换行且不溢出。
+
+        nowrap_keys 中的键对应的值不自动换行（用于日期时间等需要保持一行的值）。
+
+ui\modules\tabs\summary.py:334: 纬度
+ui\modules\tabs\summary.py:335: 经度
+ui\modules\tabs\summary.py:336: 海拔
+ui\modules\tabs\summary.py:337: 起始日期
+ui\modules\tabs\summary.py:338: 结束日期
+ui\modules\tabs\summary.py:339: 持续时长
+ui\modules\tabs\summary.py:340: 时间步长
+ui\modules\tabs\summary.py:341: 数据点数
+ui\modules\tabs\summary.py:342: 静风阈值
+ui\modules\tabs\summary.py:345: 平均气温
+ui\modules\tabs\summary.py:346: 平均气压
+ui\modules\tabs\summary.py:347: 平均空气密度
+ui\modules\tabs\summary.py:348: 空气密度比
+ui\modules\tabs\summary.py:351: 平均风速
+ui\modules\tabs\summary.py:352: 功率密度
+ui\modules\tabs\summary.py:353: 风功率等级
+ui\modules\tabs\summary.py:356: 参考高度范围
+ui\modules\tabs\summary.py:357: 风切变指数 α
+ui\modules\tabs\summary.py:358: 拟合优度 R²
+ui\modules\tabs\summary.py:359: 地表粗糙度
+ui\modules\tabs\summary.py:360: 粗糙度等级
+ui\modules\tabs\summary.py:361: 有效高度层数
+ui\modules\tabs\summary.py:412: 纬度
+ui\modules\tabs\summary.py:413: 经度
+ui\modules\tabs\summary.py:414: 海拔
+ui\modules\tabs\summary.py:415: 起始日期
+ui\modules\tabs\summary.py:416: 结束日期
+ui\modules\tabs\summary.py:417: 持续时长
+ui\modules\tabs\summary.py:418: 时间步长
+ui\modules\tabs\summary.py:419: 数据点数
+ui\modules\tabs\summary.py:420: 静风阈值
+ui\modules\tabs\summary.py:421: 结束日期
+ui\modules\tabs\summary.py:421: 起始日期
+ui\modules\tabs\summary.py:437: 平均气温
+ui\modules\tabs\summary.py:438: 平均气压
+ui\modules\tabs\summary.py:439: 平均空气密度
+ui\modules\tabs\summary.py:441: 空气密度比
+ui\modules\tabs\summary.py:476: 平均风速
+ui\modules\tabs\summary.py:477: 功率密度
+ui\modules\tabs\summary.py:478: 风功率等级
+ui\modules\tabs\summary.py:490: 功率密度 @ 
+ui\modules\tabs\summary.py:490: 功率密度 @ 
+ui\modules\tabs\summary.py:491: 风功率等级
+ui\modules\tabs\summary.py:529: 按唯一高度聚合风速均值，再对 ln(V)-ln(z) 线性拟合得到风切变指数 α。
+
+        同一高度常有多套方位/boom 传感器，先取该高度均值再拟
+ui\modules\tabs\summary.py:599: 参考高度范围
+ui\modules\tabs\summary.py:600: 风切变指数 α
+ui\modules\tabs\summary.py:601: 拟合优度 R²
+ui\modules\tabs\summary.py:602: 地表粗糙度
+ui\modules\tabs\summary.py:603: 粗糙度等级
+ui\modules\tabs\summary.py:604: 有效高度层数
+ui\modules\tabs\summary.py:610: 纬度：返回原样格式 'N 27.371021' 或 'S -27.371021'。
+ui\modules\tabs\summary.py:620: 经度：返回原样格式 'E 106.087546' 或 'W -106.087546'。
+ui\modules\tabs\summary.py:637: 时间步长（分钟，数值）；供显示与持续时长换算共用。
+ui\modules\tabs\time_series.py:1: 分析 Tab 实现（拆分自 analysis_tabs，S2）。
+ui\modules\tabs\time_series.py:34: 时间序列：原版 Windographer 风格。
+
+    布局：顶部 Display 单选按钮；左侧选项列（每个通道 / 全选行前面 3 列复选框，
+    
+ui\modules\tabs\time_series.py:241: 生成一个固定宽度的三列复选框容器，返回 (widget, [cb0, cb1, cb2])。
+ui\modules\tabs\time_series.py:261: 创建一行：checkbox 容器 + 标签（无颜色方块）。
+
+        All 行：name=None，复选框连接 _make_all_handler。
+
+ui\modules\tabs\time_series.py:297: 根据当前数据集重建通道列表，保留勾选状态。
+ui\modules\tabs\time_series.py:459: 数值
+ui\modules\tabs\time_series.py:464: 数值
+ui\modules\tabs\time_series.py:518: 按「文档长度恒定」映射滑块。
+
+        Qt 滑块长度 = pageStep / (max - min + pageStep)。令文档长度恒为 D：
+ 
+ui\modules\views.py:1: WindAnaly 独立视图窗口（数据覆盖 / 文档历史 / DMap / 箱线图 / CDF）。
+
+每个窗口都是独立 QMainWindow，读取 Analy
+ui\modules\views.py:24: 返回数据集中的数值型通道名（用于箱线图/CDF 候选）。
+ui\modules\views.py:71: 有效率
+ui\modules\views.py:116: DMap：日期 × 小时热力图，对齐原版布局。
+
+    Data column 下拉列出全部通道（含 TI/WPD 计算列），
+    Change Colo
+ui\modules\views.py:256: Boxplot：Monthly Statistics 箱线图 + Filter by。
+ui\modules\views.py:335: 月
+ui\modules\views.py:335: 月
+ui\modules\views.py:453:  · 序列号 
+ui\modules\views.py:453:  · 序列号 
+ui\modules\views.py:471: 数据集 
+ui\modules\views.py:471: 数据集 
+ui\modules\views.py:471: 链接台账库
+ui\modules\wind_rose_widget.py:1: 风玫瑰图控件：左侧 Windographer 风格控制面板 + 极坐标图/表格切换。
+
+Display: occurrences / frequency / m
+ui\modules\wind_rose_widget.py:35: 气压
+ui\modules\wind_rose_widget.py:35: 气温
+ui\modules\wind_rose_widget.py:35: 风向
+ui\modules\wind_rose_widget.py:35: 风速
+ui\modules\wind_rose_widget.py:36: 其它
+ui\modules\wind_rose_widget.py:36: 垂直风速
+ui\modules\wind_rose_widget.py:36: 相对湿度
+ui\modules\wind_rose_widget.py:39: 均值
+ui\modules\wind_rose_widget.py:39: 最大
+ui\modules\wind_rose_widget.py:39: 最小
+ui\modules\wind_rose_widget.py:39: 标准差
+ui\modules\wind_rose_widget.py:40: 阵风
+ui\modules\wind_rose_widget.py:43: 东北
+ui\modules\wind_rose_widget.py:43: 东南
+ui\modules\wind_rose_widget.py:43: 西北
+ui\modules\wind_rose_widget.py:43: 西南
+ui\modules\wind_rose_widget.py:44: 东
+ui\modules\wind_rose_widget.py:44: 北
+ui\modules\wind_rose_widget.py:44: 南
+ui\modules\wind_rose_widget.py:44: 西
+ui\modules\wind_rose_widget.py:45: 水平
+ui\modules\wind_rose_widget.py:50: 中文模式：把英文规范通道名转换为中文显示名
+    （如 `Dir 180m N Avg` → `180m北风向 [均值]`）；英文模式原样返回规范名。
+
+  
+ui\modules\wind_rose_widget.py:97: 绘制小折线图图标（用于 Format 图表按钮）。
+ui\modules\wind_rose_widget.py:111: 绘制小表格网格图标（用于 Format 表格按钮）。
+ui\modules\wind_rose_widget.py:126: 封装 setCurrentIndexByData，自动 blockSignals。
+ui\modules\wind_rose_widget.py:135: 风玫瑰图控件：左侧控制面板 + 右侧图/表。
+
+    show_toolbar=True 时显示左侧控制栏（用于 Wind Rose Tab）；
+    sh
+ui\modules\wind_rose_widget.py:724: 打开风玫瑰属性对话框（RosePropertiesDialog）。
+
+        签名：RosePropertiesDialog(project, curr
+ui\modules\wind_rose_widget.py:737: 右侧图例面板：每条系列一个带复选框的条目，与原版一致。
+
+        关键修复：若系列集合未变化，仅就地更新勾选状态与颜色，绝不销毁重建
+        复
+ui\modules\wind_rose_widget.py:815: 根据左侧 Filter 设置构造布尔 mask。
+ui\modules\wind_rose_widget.py:1053: 全部风向通道模式：每个风向通道作为一条系列叠加到同一风玫瑰。
+ui\modules\wind_rose_widget.py:1071: 全部风向通道
+ui\modules\wind_rose_widget.py:1103: 按高度/方向匹配最近的风速 Avg 列。
+ui\modules\wind_rose_widget.py:1205: 表格视图右键菜单：Copy / Export / Transposed。
+ui\modules\wind_rose_widget.py:1222: 提取当前表格全部内容（含表头），返回二维字符串列表。
+ui\toolbar_icons.py:1: 工具栏彩色图标：按 Windographer 原版风格用 QPainter 绘制，零外部资源。
+
+每个 key 对应一个 16×16 彩色小图标（按 size 
+ui\toolbar_icons.py:49: 白纸 + 折角 + 蓝色文字行。
+ui\toolbar_icons.py:62: 黄色文件夹（后盖 + 前身）。
+ui\toolbar_icons.py:73: 绿色加号。
+ui\toolbar_icons.py:80: 杆 + 三角旗。
+ui\toolbar_icons.py:90: 小时钟：白面 + 彩色圈 + 指针。
+ui\toolbar_icons.py:100: 圆形徽章：彩色圆 + 白色字符（? / i）。
+ui\toolbar_icons.py:112: 橙色齿轮。
+ui\toolbar_icons.py:368: 根据 key 返回彩色工具栏图标；未知 key 返回空图标（纯文字回落）。
+ui\update_tools.py:1: 更新器混入：主程序只负责「唤醒」独立更新器，更新全由更新器接管。
+
+架构（与 WindVault_QT 同机制）：
+  - 主程序启动 → 后台拉起 updat
+ui\update_tools.py:26: 把更新所需上下文写给更新器（它不读主程序任何内部状态）。
+ui\update_tools.py:44: 拉起独立更新器进程。返回是否成功启动。
+ui\update_tools.py:62: 窗口混入：只提供「拉起更新器」入口与状态栏提示。
+ui\update_tools.py:65: 启动时伴随拉起更新器（后台无窗查询），并轮询其检查结果。
+ui\update_tools.py:80: 后台静默检查开关（设置 auto_update_check，默认开）。
+ui\update_tools.py:88: 后台更新器发现新版本时，状态栏提示（不弹窗、不打扰）。
+ui\update_tools.py:103: 发现新版本 v
+ui\update_tools.py:103: 发现新版本 v
+ui\update_tools.py:103: ，可在「帮助 → 检查更新」中安装
+ui\update_tools.py:103: ，可在「帮助 → 检查更新」中安装
+ui\update_tools.py:104:  个新版本）
+ui\update_tools.py:104:  个新版本）
+ui\update_tools.py:104: （共 
+ui\update_tools.py:104: （共 
+ui\update_tools.py:110: 帮助 → 检查更新：前台打开更新器（版本列表/下载/安装）。
+ui\update_tools.py:114: 未找到独立更新器 updater.exe（安装目录缺失），请重新安装或手动下载全量包
+ui\update_tools.py:120: 窗口关闭：停掉提示轮询（更新器是独立进程，无需清理）。
+
+硬编码中文文案：733 处，白名单接受 0 处，待处理 733 处

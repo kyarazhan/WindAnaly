@@ -8,6 +8,9 @@ if errorlevel 1 goto :fail
 python -X utf8 -m pytest tests -q
 if errorlevel 1 goto :fail
 
+python -X utf8 tools\i18n_audit.py
+if errorlevel 1 goto :fail
+
 set QT_QPA_PLATFORM=offscreen
 python -X utf8 tools\smoke_ui.py
 if errorlevel 1 goto :fail

@@ -1,0 +1,568 @@
+# i18n 审计基线白名单（B5，2026-09-27）：每行一个已存量的硬编码
+# 中文文案子串（忽略空白差异）。新增界面文案必须走 tr()，
+# 否则审计失败。存量清零 = 逐条修复后从本文件删除对应行。
+WindAnaly：测风塔数据风资源分析工作台（主窗口）。  入口 windanaly.py 创建本窗口；构造时接受 dataset_spec（台账库序号或 文件路径）并自动载入。
+WindAnaly 主窗口。      顶部为 Windographer 风格一级 Tab（Summary/Time Series/Wind Rose/...），     每个 Tab 内部采用「左侧控制面板 + 右侧绘图/表格区」布局。
+就绪 · 未载入数据集 · 可「数据管理软件」载入
+本软件打开的可见子窗口（QMainWindow，不含主窗口与启动器）。
+导出翻译对照表 CSV 供用户编辑。
+导入用户编辑后的翻译对照表。
+新建一个 WindAnaly 窗口。
+已新建窗口
+访问项目主页（GitHub 仓库）。
+查看版本历史（GitHub Releases 页，含各版更新说明）。
+关于对话框。
+关于 WindAnaly
+<br>测风塔数据风资源分析工作台<br><br>基于 PySide6 构建，参考 Windographer 工程方法设计。
+打开 Configure Data Set 对话框。
+无数据
+请先载入数据集
+配置数据集
+通道启用
+数据集已配置：
+打开 Calibration 校准对话框。
+校准
+已更新校准常量
+校准常量已更新
+修正类功能的统一数据守卫。
+应用比例与偏移
+已应用比例与偏移
+应用时移
+平移
+已应用时移
+删除数据
+已删除数据
+插补缺失值
+已插补缺失值
+修复量化
+已修复量化
+组合风速仪
+已组合风速仪
+垂直外推
+已垂直外推
+打开语言设置。
+手动标记
+手动标记已应用
+散点图标记
+散点图标记已应用
+规则标记
+规则标记已执行
+塔影标记
+塔影标记已执行
+检查标记
+标记已检查
+定义标记
+已更新标记类型
+标记类型已更新
+定义常用标记
+已更新常用标记
+常用标记已更新
+保存截图
+PNG 图像 (*.png);;所有文件 (*.*)
+截图已保存：
+无数据可导出
+标记剔除
+起始时间 (YYYY-MM-DD HH:MM)：
+结束时间 (YYYY-MM-DD HH:MM)：
+标记失败
+已标记剔除：
+个时间点
+点
+已清除全部剔除标记
+剔除统计
+数据集：
+总点数：
+已剔除：
+把子对话框定位到菜单栏+工具栏下方，避免遮挡顶部操作区。
+按 settings['analy_tabs_visible'] 恢复各 Tab 的显示状态。          兼容旧版中文 Tab 名：自动映射为英文底座并回写 settings，         避免切换语言底座后所有 Tab 被隐藏。
+日变化
+勾选/取消首页展示中的 Tab，控制其在主窗口的显示。
+每次显示都强制顶部栏可见，并同步顶栏高度（工具栏可能已换行）。
+窗口缩放时刷新顶部栏几何诊断，并同步顶栏高度。
+原临时诊断已移除；保留空方法避免调用点改动。
+独立运行 WindAnaly（可携带来源 spec）。      confirm=True 时载入原始文件会弹出通道确认对话框。
+LoaderMixin：数据装载与来源解析（打开/增加/目录合并/台账库链接）。"  从 app.py 拆出（S2）。纯合并/扫描逻辑在 core/loader.py； 本 Mixin 只做带 UI 的编排，self.* 引用经 MRO 在运行期解析。
+打开：既支持 .windanaly/.windrefine 项目，也支持各厂商原始数据格式。
+打开
+从测风塔台账数据库链接数据集，或直接打开台账数据库。
+把当前活动数据集导出到台账数据库（internal 宽表）。
+导出到数据库
+序列号
+打开文件夹：递归读取目录及所有子目录里的数据文件，合并为一个数据集。
+打开文件夹
+无数据文件
+该目录及其子目录下未找到支持的数据文件。  支持的后缀：
+增加：把新数据文件的通道拼接/覆盖到已打开的数据上。
+增加数据
+增加目录：递归读取目录及所有子目录的数据，拼接到已打开的数据上。
+增加目录
+关闭当前数据集。
+关闭数据集
+已关闭数据集
+解析 dataset_spec（library:<ds_id> / file:<路径>）载入 Project。          confirm 控制是否弹出通道确认对话框；None 时使用实例的 self._confirm。
+未找到数据集（id=
+），可能已被删除
+文件不存在：
+未知
+无法识别的数据集标识：
+用户取消配置数据集，导入已中止
+载入数据
+行 ·
+通道
+已载入：
+通道（启用）
+载入失败：
+解析一个或多个数据文件并载入。          mode='open'   → 替换当前数据集（打开 / 打开文件夹）         mode='append' → 拼接/覆盖到已打开的数据集上（增加 / 增加目录）         识别逻辑与「打开」完全一致（共用 parse_file）。
+未选择任何文件
+: 无有效数据行
+所选文件均无法解析为测风数据
+个文件）
+个文件
+已载入
+已增加
+个文件跳过）
+根据通道类型设定默认活动通道。
+弹窗让用户选择库内数据集或 CSV 文件。
+台账库内数据集
+CSV/TXT 原始文件
+打开数据
+数据来源：
+· 序列号
+台账库中暂无数据集
+选择数据集
+选择原始数据文件
+测风数据文件 (*.txt *.csv *.xls *.xlsx *.asc *.sta *.row *.rwd *.rld *.ndf);;所有文件 (*.*)
+MenusMixin：主窗口菜单/工具栏构建、语言重翻译、自定义工具栏对话框。  从 app.py 拆出（S2）。仅包装「界面骨架」，动作 handler 仍在 app.py； self.* 引用经 MRO 在运行期解析，Mixin 不反向 import app。
+按当前 language 刷新菜单、动作、Tab 文案。
+创建 QAction 并注册到 self._actions，供工具栏复用。          text 为中文 base；setData 保存原文以便切换语言时重刷。
+根据 settings['analy_toolbar'] 刷新工具栏按钮（彩色图标）。
+返回工具栏按钮图标；缺失时返回空图标（纯文字）。
+快捷工具栏换行增高时同步顶栏高度（菜单栏 24 + 工具栏高度）。          窗口销毁期间信号可能晚到，此时顶栏 C++ 对象或已析构——忽略。
+弹出对话框，让用户自定义工具栏展示的动作。
+自定义工具栏
+取消
+确定
+ProjectIoMixin：项目文件（.windanaly）新建/保存/载入 + 最近文件管理。"  从 app.py 拆出（S2）。仅包装「项目持久化」，self.* 引用经 MRO 在运行期解析。
+新建项目：清空当前会话。
+已新建项目
+保存项目；若已有路径则直接覆盖，否则弹出另存为。
+另存为项目。
+请先载入数据集再保存项目
+另存为
+WindAnaly项目.windanaly
+WindAnaly 项目 (*.windanaly);;所有文件 (*.*)
+实际保存项目到 path，并更新最近文件。
+项目已保存：
+保存项目
+保存失败
+向 settings 写入一条最近文件/项目记录，最多保留 3 条。
+刷新文件菜单的「最近文件」子菜单。
+(无)
+文件不存在
+路径已失效：
+打开指定路径的项目文件；若用户误选数据文件，自动降级为打开数据。
+打开失败
+项目已恢复：
+（剔除
+点）
+恢复项目
+Fallback 顶部菜单栏/工具栏实现。  当 PySide6 的 QMenuBar/QToolBar 在 Windows 某些环境下无法作为普通子 widget 渲染时，用纯 QWidget + QToolButton + QMenu 实现可稳定显示的替代方案。  设计目标：视觉上尽量贴近原生 QMenuBar/QToolBar——菜单项紧密排列、 工具栏图标+小字紧凑、整体严格左对齐、无多余按钮边框。
+纯 QWidget 实现的菜单栏，使用 QToolButton（InstantPopup）。
+去掉菜单按钮上的助记符，保持简洁。
+添加一个顶级菜单按钮，点击即弹出菜单。
+更新菜单按钮文案（语言切换用）。
+在末尾添加弹性占位。
+清空所有按钮（不会删除 QMenu 对象）。
+返回已注册的全部 QMenu。
+返回所有 QMenu 的 menuAction（兼容旧检查）。
+纯 QWidget 实现的快捷工具栏（文字按钮，宽度不足时自动换行）。      按钮数量超出可用宽度时自动折行，并按行数调整自身高度，     通过 heightChanged 通知宿主调整顶栏高度。
+去掉助记符和省略号，让工具栏按钮更紧凑。
+为 QAction 创建一个按钮并加入工具栏。          text 覆盖按钮/悬停文案（默认用 action.text() 的净化版本）；         icon_only=True 时只显示图标（悬停显示 text 文案）。
+添加竖向分隔线。
+贪心换行：按可用宽度把按钮铺到多行，并同步自身高度。          注意：已在布局中的 widget 直接 addWidget 到新坐标即为"移动"，         不要 setParent(None) 再加回——那个中间无父状态会在窗口销毁阶段         触发原生层崩溃。销毁期间布局可能已析构，静默跳过。
+清空工具栏按钮。
+返回当前按钮关联的 QAction。
+按 QAction 当前 text 刷新按钮文案（固定文案与图标按钮除外）。
+工具栏彩色图标：按 Windographer 原版风格用 QPainter 绘制，零外部资源。  每个 key 对应一个 16×16 彩色小图标（按 size 缩放绘制）； 未知 key 返回空图标（调用方回落为纯文字按钮）。
+白纸 + 折角 + 蓝色文字行。
+黄色文件夹（后盖 + 前身）。
+绿色加号。
+杆 + 三角旗。
+小时钟：白面 + 彩色圈 + 指针。
+圆形徽章：彩色圆 + 白色字符（? / i）。
+橙色齿轮。
+根据 key 返回彩色工具栏图标；未知 key 返回空图标（纯文字回落）。
+更新器混入：主程序只负责「唤醒」独立更新器，更新全由更新器接管。  架构（与 WindVault_QT 同机制）：   - 主程序启动 → 后台拉起 updater.exe（无窗）查询更新源；     发现新版本时更新器写 .update/available.json，本混入轮询到后     在状态栏左下角提示「发现新版本 vX.Y.Z」，不打扰用户；   - 帮助 → 检查更新 → 前台拉起 updater.exe 窗口：版本选择（当前版本     之后的都可以选）、下载最新完整包或多个增量包逐级补齐、关闭主程序、     备份、替换、重启 —— 全部在更新器独立进程里完成；   - updater.exe 还可脱离主程序独立双击运行（主程序损坏时自救）。
+把更新所需上下文写给更新器（它不读主程序任何内部状态）。
+拉起独立更新器进程。返回是否成功启动。
+窗口混入：只提供「拉起更新器」入口与状态栏提示。
+启动时伴随拉起更新器（后台无窗查询），并轮询其检查结果。
+后台静默检查开关（设置 auto_update_check，默认开）。
+后台更新器发现新版本时，状态栏提示（不弹窗、不打扰）。
+发现新版本 v
+，可在「帮助 → 检查更新」中安装
+（共
+个新版本）
+帮助 → 检查更新：前台打开更新器（版本列表/下载/安装）。
+未找到独立更新器 updater.exe（安装目录缺失），请重新安装或手动下载全量包
+窗口关闭：停掉提示轮询（更新器是独立进程，无需清理）。
+兼容 shim：实现已拆分至 ui/dialogs/analysis/（S2），导入路径保持不变。
+Calibration 校准窗口（对齐 Windographer 原版布局）。  上方时间轴显示各通道的校准段，下方左侧为 Selected time / Store constants， 右侧为 Constants 表格。全英文标签，中英文经 tr() 切换。
+校准时间轴：一行为一个通道，分段显示校准区间。
+校准主对话框（全英文标签，对齐原版布局）。
+Compare 菜单对话框：Compare Data Sets + Measure Correlate Predict (MCP)。  按 Windographer 风格实现 UI 骨架与基础计算，复杂算法后续按真机反馈精调。
+MCP 时间步下拉文本 → pandas 重采样频率别名。
+pandas 频率别名 → 小时数。
+安全 Pearson 相关（有限值、剔常值）。
+逐小时平均日变化。
+逐月平均。
+返回 (sector_centers, frequencies_by_bin)。
+带全选复选框的多选列表。
+多数据集对比：Display 类型切换 + Settings + 多图展示。
+确保右侧有 n 个 PlotCanvas。
+返回 [(显示名, series), ...]，受传感器设置影响。
+Import Data Tab：按 Windographer 截图布局重构。      结构：     - 顶部三栏：Target data set / Reference data set / Settings       （Settings 含 Time step of / Offset reference data / Calculate...）     - 底部三列属性表：Target / Reference / Final，每表两列 Property | Original。
+最优时间偏移约
+小时 （该偏移下相关系数
+在下拉项（0h + 1..24 ahead + 1..24 back）中定位最接近项。
+Compare Sites Tab：多图对比展示。
+Correlate Speeds Tab：算法选择与回归参数 + 真实计算。
+由 MCP 主对话框注入并发目标/参考风速。
+用户勾选的算法列表（简称）。
+运行选中的算法，更新回归参数表。
+更新回归参数表（每行一个算法）。
+Correlate Directions Tab：风向相关性。
+Synthesize Data Tab：生成最终数据集。
+MCP 主对话框：5 个 Tab。
+Configure Data Set 对话框（两 Tab）。  - Data Columns：编辑每个通道的类别/标签/单位/颜色/高度/可见性/关联列，   底部实时绘制 PDF / 日变化 / 月统计三张小图。 - Data Set：站点名称、描述、经纬度/海拔、时间戳位置、calm 阈值、无效值标记。  导入/追加原始数据时直接弹出；也可通过「修正 → 配置数据集」随时打开。
+其它
+从名称中提取方位（空格/下划线风格均可）：     `Speed 160m W Avg` / `Ch1_Anem_160.00m_W_Avg` → W。
+去掉末尾的单字母后缀（前面是统计词时才认定）：     `SPEED 120m AVG A` → `SPEED 120m AVG`。
+传感器身份 = 原始列名去掉统计词/单位词后的主干（下划线/空格通用）。      同一支传感器的 Avg/SD/Min/Max 行归为同一键；不同传感器（Ch1/Ch2…）     天然不同。
+把可能为 None/空/NaN 的值安全转成 float。      QDoubleSpinBox.setValue(float('nan')) 在不同 Qt 版本下会 clamp 到范围边界     （如 lat 变成 90），因此不能返回 NaN。对 None/空 返回 0.0，让对话框显示     0 而不是极值；调用方再据此判断是否为「未设置」。
+添加计算列：支持 11 种计算类型（对齐 Windographer 17.11-17.18）。
+Configure Data Set 主对话框。
+监听表格 viewport resize，窗口/分割器变化时重新均分列宽。
+先让每列完整显示内容，再把多余空间均分给所有列。
+仅 Avg 通道显示 Std. dev./Max./Min. 关联下拉。
+后缀下拉：把所选通道的标准化标签追加/替换末尾字母         （`SPEED 120m AVG` + A → `SPEED 120m AVG A`）；选（空）则去掉。
+按规则重算标准化名：`SPEED 120m W AVG`（类型全大写完整单词 +         高度 + 方位 + 统计）；同类型同高度多支传感器按原始列名主干识别，         自动加后缀 A/B/C…，单支默认不加。
+月
+保存通道模板
+JSON (*.json);;所有文件 (*.*)
+加载通道模板
+自动关联开关状态变化。
+为每个 Avg 通道自动匹配同类型、同高度、同方位的 SD/Max/Min。
+Export Data 对话框：支持多种风资源软件格式导出。  布局参考 Windographer 4.0.28 Export Data 对话框：紧凑三栏，底部文件预览。 各格式选项卡实现位于 ui/dialogs/export/ 包（B3 拆分）。
+导出数据主对话框。
+Flags 菜单 8 个核心对话框（WindAnaly）。  按 Windographer 风格实现： 1) Manual Flag：时间区间 + 通道勾选 + 标记应用/移除 + 数据表 + 时序预览 2) Flag By Scatter Plot：X/Y 选择 + 散点图 + 刷选/框选 + 应用标记 3) Flag With Rules：规则表 + 可勾选规则 + Test/Execute 4) Flag Tower Shading：风速仪对 + 扇区 + 中位数比/散点比双图 5) Inspect and Remove Flags：标记筛选 + 通道 + 时序/统计展示 + 取消标记 6) Define Flags：标记类型表（颜色/参与计算/显示） 7) Define Favorite Flags：常用标记定义 8) View Favorite Flag Rules：常用标记规则查看
+带「全选」复选框的多选列表。
+标签 + QDateTimeEdit 组合。
+颜色块显示。
+含 Flag 选择 + Apply/Remove/Remove All 按钮的公共底部区。
+Table Settings：选择表格可见列（按类型 / 按名称）、着色与标签截断。
+Flag Manually：原版三区布局。      左：时间区间 + 数据列勾选 + 更新选项 + 标记下拉 + 三个 Segment 按钮；     中：时序图（选段黄色高亮带，无重复图例，y 轴从 0 起）+ 数据表；     右：图例复选网格——每行三个复选框（图/表/标记）+ 颜色样 + 通道名，         All wind speed / direction columns 快选只勾选平均值（Avg）列。
+All wind speed / direction columns：只勾选该类型的平均值（Avg）列。
+散点图标记：X/Y 选择 + 散点 + 选择计数 + 应用标记。
+规则定义。
+按规则标记：规则表 + 可勾选 + Test/Execute。
+塔影标记：风速仪对 + 扇区 + 中位数比/散点比双图。
+检查并移除标记：筛选 + 通道 + 时序/统计 + 取消标记。
+定义标记类型。
+定义常用标记（界面与 Define Flags 一致，但 favorite=True）。
+查看常用标记规则表。
+语言设置对话框。  英文为底座，提供三列：英文底座 / 英文修正 / 中文翻译。 展示英文菜单时，优先使用英文修正列（若已填写）；软件完成后， 英文修正列将替换为英文底座。
+切换界面语言，并维护英文底座 → 英文修正 / 中文翻译 的对照表。
+兼容 shim：实现已拆分至 ui/dialogs/revise/（S2），导入路径保持不变。
+风玫瑰图属性对话框（Windographer 风格）。  Tabs: Axes / Channels / Fonts
+实线
+虚线
+点线
+点划线
+无
+圆
+方
+菱形
+三角
+填充+线
+仅填充
+仅线
+柱状
+风向玫瑰图
+选择颜色
+Tools 菜单对话框：风资源工程师常用独立计算工具。  按 Windographer 风格实现 UI 骨架与基础计算，复杂算法后续按真机反馈精调。
+加载机型库 JSON（随包分发的只读资源）。
+ISA：返回 (temperature_C, pressure_hPa, density_kg_m3)。
+干空气密度 kg/m3。
+饱和湿空气密度（简化 Magnus 公式）。
+对数律：z0 为粗糙长度(m)。
+幂律拟合，返回 (alpha, r2) 或 (None,None)。
+对数律拟合粗糙长度 z0，返回 (z0, r2)。
+Gumbel 拟合，返回 (u, alpha, v50)。
+Tools 对话框统一基类：标题图标化、底部 Help / Close 按钮。
+可编辑数值表，返回 (col0_values, col1_values, ...)。
+返回 (speeds, powers)。
+对话框包：WindAnaly 各功能模态对话框。
+advanced.py：见 _common 与 shim。
+短时间间隔分析：逐区间查看廓线 / 矢量平均方向 / 时间序列。
+长期分析：年际变化 / 逐月逐时轮廓 / 频率玫瑰 / 累计 IAV（手册 11.11）。
+年际变化 IAV（%）= 年均值标准差 / 年均值均值 × 100。
+Annual means / IAV 等表格视图（keys=None 时清空）。
+极端风分析：Periodic Maxima / Independent Storms / EWTS II 三算法。
+当前速度序列（Gusts 模式取关联 max 通道），已按标记过滤。
+Set Recommended：使风暴数 ≈ 每年 20 场的阈值（手册 11.13.2）。
+basic.py：见 _common 与 shim。
+energy.py：见 _common 与 shim。
+风机发电量：功率曲线 + 密度修正 + 轮毂高度外推 + AEP/NCF。
+读取可编辑功率曲线表 → (curve_u, curve_p)。
+按当前额定功率填充示例曲线（IEC 风格：3 m/s 切入、15 m/s 满发）。
+本包各对话框共享的助手与基类（S2 拆分聚集）。
+启发式从通道名中提取高度(m)。
+幂律拟合 v = v_ref * (z/z_ref)^alpha；返回 (alpha, fit_values)。
+对数律拟合 u = (u_star/kappa)*ln(z/z0)；返回 (u_star, fit_values)。
+无 scipy 时的简化 Weibull 矩估计：返回 (k, c)。
+通用 Filter by 区域：Flag / Date / Date range / Direction / Data column min/max。
+Analyze 对话框通用骨架：左控制 / 右结果，底部 Help/Close。
+子类覆写：在 self.left_lay 中添加控制项。
+子类覆写：在 self.right_lay 中添加图表/表格。
+子类覆写：根据控件状态刷新结果。
+基于 Flag 勾选返回基础掩码（未实现复杂筛选，仅保留未标记）。
+Analyze 菜单 16 个分析对话框（按语义分组，S2 拆分）。
+Export Data 格式选项卡（拆分自 export_dialog，B3）。
+导出 EPE
+导出 Meteodyn WT
+导出 MGM
+返回 (speed_col, dir_col, temp_col, dens_col, ti_col)。
+导出 Openwind
+导出 SAM
+导出 Time Series
+返回 (H_counts, speed_edges, dir_mids, speed_series_aligned)。
+导出 WAsP .tab
+导出 WindFarmer
+导出 WindSim
+导出 XML Metadata
+"各格式选项卡共享的工具函数与公共选项基类（B3 拆分聚集）。
+按标记、时间区间、列有效性筛选行。
+月均均值 (Mean of Monthly Means)。
+为 Openwind 单高度导出寻找同高度的温度/密度/TI 列（如没有则回退到任意列）。
+包含 Include、Export 区间、Preview settings 三个紧凑小组。
+Export Data 对话框的 10 种格式选项卡（B3 拆分）。
+apply_scale_offset.py：见 _common 与 shim。
+选择要修改的数据列
+已对
+个通道应用 Offset=
+apply_time_shift.py：见 _common 与 shim。
+combine_sensors.py：见 _common 与 shim。
+已组合
+delete_data.py：见 _common 与 shim。
+选择数据列：
+已删除
+个通道
+已从
+个通道删除
+fill_gaps.py：见 _common 与 shim。
+原版风格的数据覆盖时间线：每通道一行色带，缺测处留白形成白色竖线。      set_data 一次性把每通道时间轴降采样为固定桶数（时间比例位置），     之后 paintEvent 只做快速绘制，勾选变化不重新计算。
+每通道一次向量化降采样：桶 = 时间比例分格，值 = 有效率。
+用同类其它高度通道重建，synth=True 时再线性填补剩余缺测。
+fix_quantization.py：见 _common 与 shim。
+返回 (edges, density%)：密度 = 占比% / 单位宽度，同原版         Frequency Density (%/m/s) 轴。
+年
+vertical_extrapolation.py：见 _common 与 shim。
+Vertical Extrapolation：原版布局。      左（共享）：Synthesize 复选 + 目标高度表（20 行）+ Flag new columns；     右：Speed | Direction | Temperature 三个 Tab；     Speed 幂律指数 8 种模式（每时间步计算 / 常数 / 月 / 小时 / 方向扇区 /     月×小时 / 扇区×月 / 扇区×小时），指数表按数据预填中位数并可编辑。
+cols=2 → 标签列+单指数列；cols>2 → 标签列+多列。
+Direction Tab：风向切变率（Wind veer rate，°/100m），6 种模式。
+每个时间步的风向切变率（°/100m）。          以最低层方向为基准，把各层方向按圆周差展开后对高度做线性拟合，         斜率 ×100。
+按数据预填切变率表（每桶中位数）；只填空白格。
+找参考风向通道的同高度 SD 列（关联优先，同高度匹配兜底）。
+按当前切变率模式为每个时间步生成 veer（°/100m）。
+Temperature Tab：温度梯度（Temperature gradient，°C/100m），8 模式。
+每个时间步的温度梯度（°C/100m）：T 对 z 线性拟合 ×100。
+按参考高度的风速比值缩放参考 SD 列，自动生成 zt 高度 SD 列。
+每个时间步的幂律指数（对勾选源做 ln v ~ ln z 拟合，向量化）。
+扇区数变化：重建扇区表行标签，空白格按数据预填。
+按数据预填各指数表（每桶中位数 alpha）；只填空白格。
+按当前模式为每个时间步生成 alpha 数组。
+填充第 1 列指数；空白格才填（保留用户编辑），NaN 跳过。
+带「全选」复选框 + 多选列表的可复用组件。
+标签 + 日期 + 时间的组合行。
+在布局底部添加 Help + Cancel + OK。
+Revise 菜单 7 个对话框（每对话框一文件，S2 拆分）。
+兼容 shim：实现已拆分至 ui/modules/tabs/（S2），导入路径保持不变。
+日变化廓线控件：左侧 Windographer 风格控制面板 + 折线图/表格切换。  对齐原版 Diurnal Profile 标签页： - Data column：多选通道复选列表（含派生 TI/WPD 计算列）+ Clear All； - Display：Single profile / By month；Format：图/表图标按钮（独占一行）； - Use only time steps containing data for all selected columns（折行两行显示）； - Filter by：Flag（Include/Exclude + 具体标记）、Date（Year/Month 各自   <All>）、Date range、Direction sector（扇区 + Sectors + Direction   sensor）、Data column（Min/Max 限值）； - 表格：Hour of Day 逐小时行，每通道 Mean (unit) / Time Steps 两列，   右键菜单 Copy Selection / Copy Table / Export Table... /   Copy Table Transposed / Export Table Transposed...。  配置经 Project.plot_settings['diurnal'] 随项目文件持久化。
+日变化廓线控件：左侧控制面板 + 右侧图/表 + 最右图例面板。
+找风速 Avg 通道配对的 SD 通道（注册关联优先，命名约定兜底）。
+派生计算列名：有 SD 配对的风速 Avg → `... TI`；全部风速 Avg → `... WPD`。          与原版一致：先列全部 TI，再列全部 WPD，附在普通通道之后。
+Min/Max 限值框单位后缀（随 Data column 过滤列的通道单位）。
+按所选通道类型给 y 轴命名（全部同类型时用具体名称）。
+极简 DOCX 生成器（零依赖：zipfile + 手写 Office Open XML）。  支持：标题 / 段落 / 表格 / PNG 图片。满足 Reports 标签页的基础报告输出。
+增量构建 DOCX：标题 / 段落 / 表格 / PNG 图片。
+频率分布控件：左侧 Windographer 风格控制面板 + 直方图/表格切换。  对齐原版 Histogram 标签页： - Display：frequency / occurrences；Format：图/表图标按钮； - Versus：one data column / data column and month / data column and   hour of day / two data columns； - Primary bins：数据列下拉（含派生 TI/WPD 计算列）+ Width/Start at/   Make first bin half this width； - Filter by：Flag、Date、Date range、Direction sector、Data column   Min/Max（与 Diurnal Profile 相同的一套过滤）； - 图：frequency 模式叠加 Best-fit Weibull 曲线 + 底部图例； - 表格：Bin | Bin Endpoints (Lower/Upper) | Occurrences | Frequency [%]。  配置经 Project.plot_settings['histogram'] 随项目文件持久化。
+频率分布控件：左侧控制面板 + 右侧图/表。
+派生计算列名（与 Diurnal 一致：先全部 TI，再全部 WPD）。
+Primary bins 下拉：全部通道 + TI/WPD 计算列（对齐原版截图）。
+Width/Start at 的单位标签随 Primary bins 列的通道单位。
+Reports 标签页的报告内容构建（HTML 预览 / PDF / DOCX 共用数据模型）。  ReportModel 从 Dataset 提取统计，输出统一的内容块序列：   ('h1'|'h2'|'p', text) / ('table', rows) / ('image', png_bytes, w, h) HTML 预览与 PDF 使用 HTML 渲染，DOCX 由 docx_writer 消费同一模型。
+从 Dataset 收集报告内容块。
+内容块 → HTML（PDF/预览用；图片以文件路径引用）。
+散点图控件：左侧 Windographer 风格控制面板 + 散点图。  对齐原版 Scatter Plot 标签页： - Plot（y 轴）/ versus（x 轴）下拉（含派生 TI/WPD 计算列）+ 交换按钮； - Color code by：flag（按标记着色）/ data column（按数据列分档着色 +   右侧色带图例）； - Filter by：Flag、Date、Date range、Direction sector、Data column   Min/Max（与 Diurnal/Histogram 同一套过滤）； - Results：Number of / Mean x value / Mean y value / Show line of best fit。  配置经 Project.plot_settings['scatter'] 随项目文件持久化。
+Plot/versus 交换按钮（上下双箭头样式）。
+散点图控件：左侧控制面板 + 右侧散点图。
+派生计算列名（与 Diurnal/Histogram 一致：先 TI 后 WPD）。
+TI/WPD 计算列 → (extra 项, None)；实列 → (None, col)。
+数据列分档着色：0/缺测 → 黑色，其余按量程 10 等分 jet 色带。          返回 (逐点颜色数组, 色带图例 [(label, color), ...])。
+Tables 控件：左侧 Windographer 风格设置面板 + 右侧统计表格。  对齐原版 Tables 标签页： - Table 下拉：Data Set Summary / Environmental Summary / Data Columns /   Wind Speed Sensor Summary / Monthly·Annual·Directional Statistics /   Occurrences·Mean·Min·Max·Std by (Month and Hour of Day | Year and Month |   Month) / Statistics by Bin / Weibull Statistics by Month /   Wind Speed Statistics for Synthesis； - Settings：Data column / Bin column / Direction sensor / Direction sector /   Combine years together / Bin settings（Width·Start at·Make first bin half）； - Filter by：Flag（Include / <Unflagged data> 复选框）、Date、Date range、   Direction sector、Data column Min/Max（与其它标签页同一套过滤）； - Export Table... 按钮 + 表格右键 Copy/Export/Transposed 菜单。  配置经 Project.plot_settings['tables'] 随项目文件持久化。
+Tables 控件：左设置面板 + 右统计表格。
+Settings/Bin settings 小节标题：粗体 + 下划分隔线（原版样式）。
+TI/WPD 计算列 → Series；实列 → None。
+把需要的 TI/WPD 计算列物化进一个工作副本。
+WindAnaly 独立视图窗口（数据覆盖 / 文档历史 / DMap / 箱线图 / CDF）。  每个窗口都是独立 QMainWindow，读取 AnalysisApp 的活动数据集实时绘制； 数据更新后点击各窗口内「刷新」即可（或重新打开）。全部使用 PlotCanvas 自绘（零新增依赖），与 WindAnaly 主界面视觉一致。
+返回数据集中的数值型通道名（用于箱线图/CDF 候选）。
+有效率
+DMap：日期 × 小时热力图，对齐原版布局。      Data column 下拉列出全部通道（含 TI/WPD 计算列），     Change Color Scheme 按钮循环切换色带。
+Boxplot：Monthly Statistics 箱线图 + Filter by。
+链接台账库
+数据集
+风玫瑰图控件：左侧 Windographer 风格控制面板 + 极坐标图/表格切换。  Display: occurrences / frequency / mean / min / max / std_dev / total_energy / scatter_plot Versus: direction / direction_and_month / direction_and_hour / direction_and_bin
+风速
+风向
+气温
+气压
+相对湿度
+垂直风速
+均值
+标准差
+最小
+最大
+阵风
+东北
+西北
+东南
+西南
+北
+东
+南
+西
+水平
+中文模式：把英文规范通道名转换为中文显示名     （如 `Dir 180m N Avg` → `180m北风向 [均值]`）；英文模式原样返回规范名。      若通道在 Dataset 注册表中有 label 字段，优先使用该 label。
+绘制小折线图图标（用于 Format 图表按钮）。
+绘制小表格网格图标（用于 Format 表格按钮）。
+封装 setCurrentIndexByData，自动 blockSignals。
+风玫瑰图控件：左侧控制面板 + 右侧图/表。      show_toolbar=True 时显示左侧控制栏（用于 Wind Rose Tab）；     show_toolbar=False 时仅保留绘图区（用于 Summary 首页，靠右键菜单操作）。
+打开风玫瑰属性对话框（RosePropertiesDialog）。          签名：RosePropertiesDialog(project, current_cfg, labels, parent)         —— project 必须是真正的 Project 实例，labels 为当前系列标签列表。
+右侧图例面板：每条系列一个带复选框的条目，与原版一致。          关键修复：若系列集合未变化，仅就地更新勾选状态与颜色，绝不销毁重建         复选框。否则会在复选框自身的 stateChanged 回调里执行 deleteLater，         引发黑屏 / 勾选失灵 / 偶发勾不上。
+根据左侧 Filter 设置构造布尔 mask。
+全部风向通道模式：每个风向通道作为一条系列叠加到同一风玫瑰。
+全部风向通道
+按高度/方向匹配最近的风速 Avg 列。
+表格视图右键菜单：Copy / Export / Transposed。
+提取当前表格全部内容（含表头），返回二维字符串列表。
+PlotCanvas 门面：状态、公共 API 与绘制分发（B4 拆分）。
+PlotCanvas：QPainter 自绘图表控件（零新增依赖）。  支持：plot_line / plot_bar / plot_scatter / plot_polar(风玫瑰) / plot_table       / plot_heatmap(数据覆盖·DMap) / plot_box(箱线图)。 布局采用 "10% padding" 原则：   - X 轴标签在下 8%，Y 轴在左 8%，标题在上 5%。   - 实际绘图区 = rect 剩余内部。 颜色遵循中文工程报告习惯：风速蓝、风向绿、温度橙、气压紫、湿度青。
+自绘图表控件。
+临时设置导出时的显示开关；调用 reset_export_flags() 恢复。
+恢复默认导出显示开关。
+按系列标签固定颜色（用于原版配色场景，如蓝=原始/棕黄=修改后）。
+选中数据段高亮带（数据坐标，随 x 轴类型）；None 清除。         用于 Flag Manually 的选段高亮。
+绘制单条折线。x 可 datetime/numeric；ymin 强制 y 轴下界。         smooth=True 时使用样条曲线连接点（用于风切变廓线）。         marker 支持 'o' 圆点 / 'd' 菱形 / 's' 方块，None 不画标记。
+绘制多条折线。series=[(label, x_arr, y_arr, marker?)， ...]；         marker 可选 'o'/'d'/'s'，缺省 None。ymin 强制 y 轴下界。         xtick_step 指定主刻度固定步长（用于平均风速等需要整间隔的场景）。         gap_detect=False 禁用缺测缺口检测（如风切变廓线：x 非等距，起点处         跳变会被误断）。show_legend=False 关闭内嵌图例（外部图例面板场景）。
+数值边界直方图（Histogram 标签页）。          edges : (n+1,) 分箱边界；counts : (n,) 每箱高度（频次或频率%）         overlay : (x, y, color, label) 叠加曲线（如 Best-fit Weibull）         legend : [(color, label), ...] 绘于图下方居中；thousands：y 刻度千分位         color : 柱体颜色（缺省深蓝；Fix Quantization 修改后直方图为棕黄）
+绘制散点图。          point_colors : 与 x/y 等长的颜色串列表（Color code by 功能）；         colorbar : [(label, color), ...] 自上而下的色带图例（离散分档着色时         画在绘图区右侧）。
+绘制风玫瑰。          Parameters         ----------         sectors : 扇区数         freq : 数值矩阵，形状 (sectors, n_series) 或 (sectors,)；                display_type='scatter_plot' 时为 (N, 2) 的 [direction, value]         title : 标题         energies : 兼容旧接口，未使用         labels : 系列标签         calm : 静风比例 (%)         center_deg : 扇区中心角度数组 (sectors,)，None 时自动生成         display_type : frequency/occurrences/mean/max/std_dev/total_energy/scatter_plot         unit : 径向轴单位         styles : 每个系列的样式字典列表；键：color/line_width/line_style/marker/                  marker_size/fill/visible/label/rose_style         radial_max : 固定径向最大值；None 时自动 nice         radial_min : 径向最小值（内圆百分比用）         inner_circle_pct : 静风圆占径向轴的百分比（0=不画）         fill_factor : 绘图区填充比例（0~1）         show_legend : 是否显示图例         line_style : 默认线型         marker : 默认标记
+绘制热力图（数据覆盖 / DMap）。          matrix 形状 (n_rows, n_cols)，NaN 视为缺测（灰底）；         xlabels/ylabels 为列/行标签；vmin/vmax 为色标上下限（None=自动）。
+绘制箱线图。          groups = [(标签, {'min','q1','med','q3','max','mean','n'}), ...]
+在控件右下角叠加一个微型工具栏。
+绘图引擎拆分模块（B4，装饰器感知重建）。
+返回当前绘图区边距 (left, right, top, bottom)。
+记录数据全范围，用于限制缩放/平移不越界。
+X 轴边界用数据真实起止（不再外扩 5%），         保证「复位 / 缩到最小」时两端不出现空白。
+按当前视图裁剪 + 像素列抽稀，带缓存。返回 (x, y)。
+当前图形要显示的图例条目；无条目时绘图区不预留右侧空间。
+按数量级选择简洁刻度格式，避免小数值的科学计数法。
+用三次贝塞尔构造平滑曲线，控制点沿相邻点切线方向。
+在 pt 处绘制数据标记：'o' 圆 / 'd' 菱形 / 's' 方块。
+在绘图区右侧外部纵向绘制图例（无背景框），对齐原版样式。          - 位置：绘图区右边框之外，顶端与绘图区顶端齐平，纵向单列；         - 字号 7pt，示例横线长 10px；         - 条目超过可用高度时截断，末行给出「… +N」提示；         - 文字过长按可用宽度省略，保证不越出控件右边界。
+数值边界直方图 + 可选叠加曲线 + 图下方图例。
+按色带名在 [0,1] 上取色（线性插值）。
+只画 Y 轴刻度/网格/外框（X 轴为类别轴，由调用方自绘标签）。
+在绘图区右侧绘制竖向色标。
+生成 nice 的坐标范围与 tick 间隔；hard_min 强制下界不低于该值。
+将当前图表渲染为位图并复制到剪贴板。
+导出图片对话框。
+导出图表底层数据，默认 .txt，文件头为英文规范名（对齐原版）。
+打开图表属性对话框。          若外部（如 WindRoseWidget）设置了 properties_handler，优先调用，         否则打开通用 PlotPropertiesDialog。
+把当前图表数据转换为 DataFrame，供导出。
+PlotCanvas：QPainter 自绘图表控件（零新增依赖）。 from __future__ import annotations  支持：plot_line / plot_bar / plot_scatter / plot_polar(风玫瑰) / plot_table       / plot_heatmap(数据覆盖·DMap) / plot_box(箱线图)。 布局采用 "10% padding" 原则：   - X 轴标签在下 8%，Y 轴在左 8%，标题在上 5%。   - 实际绘图区 = rect 剩余内部。 颜色遵循中文工程报告习惯：风速蓝、风向绿、温度橙、气压紫、湿度青。
+导出图片：对齐原版布局，支持 PNG / 剪贴板，含尺寸、字体、线宽、预览。
+scatter_plot：极坐标散点（direction vs value）。
+图表属性：Axes / Channels / Fonts 三页。
+返回当前 effective 范围（若未缩放则返回数据全范围）。
+将绘图区像素坐标转换为数据坐标。
+将数据坐标转换为绘图区像素坐标。
+返回当前 x 轴视图范围（数据坐标）。
+返回 x 轴数据全范围。
+仅设置 x 轴范围，y 轴保持当前。
+以像素点 (px,py) 为中心缩放 factor 倍（factor>1 放大）。
+把 [lo,hi] 平移式钳进 [b_lo,b_hi]，保持窗口跨度不被压缩。
+设置视图范围，并限制在数据边界内（贴边时整体平移，跨度不变）。
+绘图引擎共享常量与工具（调色板/色带/时间轴/LOD 抽稀）。
+将 datetime64 / datetime / Timestamp 的 x 轴统一转为 ordinal 数值。      返回 (x_numeric, auto_fmt)：       - x_numeric：ordinal 整数数组（与 _draw_axes 的 xtick_fmt='date'         用 datetime.fromordinal 还原一致）；非日期则为原数组。       - auto_fmt：检测到日期时为 'date'，否则为 None。     调用方可用 ``xtick_fmt = xtick_fmt or auto_fmt`` 自动启用日期轴。     y 轴始终为数值，不受影响。
+按像素列做 min/max 包络抽稀（LOD），保证视觉峰值不丢失。      x 需为升序且已剔除 NaN；每列输出 (x, ymin) 与 (x, ymax) 两个点，     点数 ≤ 2*nbins。用于 5 万点级时间序列的快速重绘。
+回溯到 ndarray 的根底数组，用于 LOD 缓存的稳定身份标识。
+PlotCanvas 自绘绘图引擎（B4 拆分：门面 + 绘制/交互/导出 Mixin）。
+分析 Tab 实现（拆分自 analysis_tabs，S2）。
+Reports：风资源分析报告（对齐原版：Report combo + Create Report + Sections + Filter by）。
+填充筛选下拉框（年份/月份/传感器/数据列）。
+独立风玫瑰 Tab：完整控制栏（Display/Versus/Sectors/Data/Format/属性）。
+独立日变化廓线 Tab：完整控制面板（Data column/Display/Format/Filter by）。
+独立频率分布 Tab：Display/Versus/Primary bins/Filter by 完整控制面板。
+独立散点图 Tab：Plot/versus/Color code by/Filter by/Results 完整面板。
+独立统计表格 Tab：25 种表型 + Settings/Filter by + Export Table。
+左侧面板与右侧图表之间的额外间隙。          用户反馈：左边最长行（起始/结束日期）与右边 y 轴标签“离地高度”         在垂直方向上完全错位，不需要再留两个汉字的宽度。这里只给 0，         实际可见间隔由 QSplitter 的 handle（约 3~4px）自然提供。
+安排一次左面板自适应。          网格刚填完时 sizeHint 还没反映最终内容，必须等布局稳定后再量测，         否则会把宽度算小、右侧仍然留大片空白。故延迟到事件循环空闲时执行。
+左栏最长一行的文字右边缘（相对左栏左边界），作为间隙的度量基准。          不能拿 widget.sizeHint().width() 当基准：它含左右边距与列间距，         比真实最长行右边缘宽出十余像素，叠加上预留间隙后会明显偏大。
+左侧面板按内容自适应：最长行右边缘到右侧图表只留 splitter handle。          用户反馈：左边最长行（日期）与右边 y 轴标签“离地高度”垂直错位，         不需要再留两个汉字的宽度。因此额外间隙设为 0，右面板从 handle 之后         开始，仍可手动拖动分隔条加宽。
+绘制所有 Avg 风速通道的月/日变化曲线，用于汇总页图例展示。
+创建扁平化信息区块：无背景/无边框，标题加粗。          标题 QLabel 存入 self._section_labels，refresh 时按当前语言         重新 tr()，实现语言切换实时生效。
+清空并填充键值网格；键 90px，值自动换行且不溢出。          nowrap_keys 中的键对应的值不自动换行（用于日期时间等需要保持一行的值）。
+纬度
+经度
+海拔
+起始日期
+结束日期
+持续时长
+时间步长
+数据点数
+静风阈值
+平均气温
+平均气压
+平均空气密度
+空气密度比
+平均风速
+功率密度
+风功率等级
+参考高度范围
+风切变指数 α
+拟合优度 R²
+地表粗糙度
+粗糙度等级
+有效高度层数
+功率密度 @
+按唯一高度聚合风速均值，再对 ln(V)-ln(z) 线性拟合得到风切变指数 α。          同一高度常有多套方位/boom 传感器，先取该高度均值再拟合，         否则不同方位混入会使 α 失真（R² 极低）。
+纬度：返回原样格式 'N 27.371021' 或 'S -27.371021'。
+经度：返回原样格式 'E 106.087546' 或 'W -106.087546'。
+时间步长（分钟，数值）；供显示与持续时长换算共用。
+时间序列：原版 Windographer 风格。      布局：顶部 Display 单选按钮；左侧选项列（每个通道 / 全选行前面 3 列复选框，     分别对应上 / 中 / 下三幅横图）；右侧 1~3 幅堆叠横图（按选中列数自动     占满 / 均分）；底部时间轴滑块。同一幅图内同类型通道叠加绘制。
+生成一个固定宽度的三列复选框容器，返回 (widget, [cb0, cb1, cb2])。
+创建一行：checkbox 容器 + 标签（无颜色方块）。          All 行：name=None，复选框连接 _make_all_handler。         通道行：name=通道名，复选框连接 refresh。
+根据当前数据集重建通道列表，保留勾选状态。
+数值
+按「文档长度恒定」映射滑块。          Qt 滑块长度 = pageStep / (max - min + pageStep)。令文档长度恒为 D：         page = V/S*D、max = D - page，则滑块占比恰好 = 可见跨度 V / 总跨度 S；         V == S 时 max == min，滑块铺满滑轨（旧实现固定 max=10000，导致         满量程时滑块只占一半轨道）。
+各 Tab 共享的助手、常量与 AnalysisTab 基类（S2 拆分聚集）。
+DatetimeIndex → 带小数的 ordinal（秒级分辨率），全向量化。      旧实现用 ``index.map(pd.Timestamp.toordinal)``，5 万点约 84 ms/通道，     是时间序列页卡顿的主因；这里降到约 1 ms。
+通道/列名保持英文规范名，不转中文，便于外部软件识别。
+与 display_name 对偶；现 display 已为规范名，直接返回。
+分析 Tab 基类：提供统一的项目注入和常用控件创建方法。
+子类实现：project 数据或选择变化时重绘。
+根据「标记/未标记」勾选返回保留行掩码；无标记或全选时返回 None。          约定：cb_unflagged（未标记数据）默认勾选 → 默认显示未剔除行；         cb_flag（标记）勾选 → 仅显示被剔除行；两者同勾/同不勾 → 全部。
+创建一组 QCheckBox；界面显示中文，内部保留规范名。
+8 个分析 Tab 的实现（基类 + 每组一文件，S2 拆分）。

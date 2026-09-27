@@ -301,15 +301,40 @@ tools/release.py <版本> --notes "…"` → push/tag → GitHub Release 只传
 1.0.7、用户数据（windkit.db）保留、版本文件同步；真实源单跳规划正确；
 发布版 updater 正确提示 1.0.7。**T1 交付效率目标达成。**
 
+### B4 完成（2026-09-27，随 v1.0.8 发布）
+
+plot.py（2,639 行）→ `ui/modules/plot/` 包：`_common`（调色板/色带/时间轴/
+LOD 工具）+ `canvas`（PlotCanvas 门面：状态/公共 API/paintEvent 分发，
+含 viewChanged Signal）+ `view`（缩放/平移/鼠标/上下文菜单 ViewMixin）+
+`cartesian`（折线/柱状/直方/散点/箱线/热力/表格绘制 + 坐标变换/图例/
+LOD，CartesianPlotMixin）+ `polar`（风玫瑰 PolarPlotMixin）+ `exporting`
+（导出图片/数据/属性 ExportingMixin）+ `properties`/`export_image` 两对话框。
+装饰器感知的段边界（@staticmethod/@property 不再丢失）；原 plot.py 移除，
+兼容再导出移入包 `__init__`（历史导入路径 `ui.modules.plot` 不变）。
+新增 `tests/test_plot_render.py`（9 项 offscreen 渲染冒烟，覆盖全部 8 种
+图型）。测试 69→**78** 项。
+
+### B5 机制上线（2026-09-27，随 v1.0.8 发布；验收口径修订）
+
+- `tools/i18n_audit.py`：AST 级审计（docstring 排除、tr() 包裹排除、
+  f-string 片段计入、空白不敏感白名单匹配），现存硬编码中文实测 **733 处**
+  （此前 211 为低估）；
+- `tools/i18n_audit_allowlist.txt`：733 处存量全部进入基线白名单（565 条
+  去重文案）；
+- run_checks 新增审计门禁：**待处理（非白名单）必须为 0**——新增界面文案
+  必须走 tr()，否则构建失败；
+- 存量清零转为持续任务（每批消化若干并从白名单删除）；「审计 0 输出」
+  目标修订为「非白名单 0 + 白名单只减不增」。
+
 ---
 
 ## 7. 度量看板（每批发布后更新）
 
-| 指标 | 基线（v1.0.5） | 目标 | 现状（v1.0.7） |
+| 指标 | 基线（v1.0.5） | 目标 | 现状（v1.0.8） |
 |---|---|---|---|
 | 仅业务码变更的补丁体积 | 21.7 MB | <2 MB | **11.7 KB ✅** |
 | 缓存命中的构建耗时 | ~2.5 min | <30 s | **<10 s ✅** |
-| 测试项数 | 69 | ≥85 | 69（B4/B5/B6 时增加） |
-| >800 行文件 | 16 | 14 | 15（export 已拆，plot 待拆） |
-| i18n 审计输出 | ~211 行 | 0 | 211（B5 待做） |
+| 测试项数 | 69 | ≥85 | **78**（+9 渲染冒烟） |
+| >800 行文件 | 16 | 14 | **14 ✅**（plot/export 均拆） |
+| i18n 审计输出 | ~211 行 | 非白名单 0 | **0 ✅**（733 存量入基线，只减不增） |
 | CI | 无 | push 即检 | **已上线 ✅** |
