@@ -69,9 +69,16 @@ def smoke_exe() -> None:
         subprocess.run(['taskkill', '/PID', str(proc.pid), '/F'],
                        capture_output=True)
     assert alive, '冻结 exe 启动后闪退'
+    # 清理冒烟运行产生的运行时残留，但保留 data/app_version.txt
+    # （程序元数据，完整包必须携带——独立更新器靠它识别已装版本）
     data = os.path.join(DIST, 'data')
     if os.path.isdir(data):
-        shutil.rmtree(data)
+        for entry in os.listdir(data):
+            if entry == 'app_version.txt':
+                continue
+            p = os.path.join(data, entry)
+            shutil.rmtree(p, ignore_errors=True) if os.path.isdir(p) \
+                else os.remove(p)
     print('exe smoke: alive OK')
 
 
